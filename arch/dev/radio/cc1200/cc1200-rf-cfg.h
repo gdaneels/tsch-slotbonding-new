@@ -59,6 +59,14 @@ typedef struct cc1200_rf_cfg {
   /* A string describing the mode */
   const char *cfg_descriptor;
   /* A pointer to a register setup exported from SmartRF */
+  const uint8_t *reconf_settings_burst;
+  /* The size of the register setup */
+  size_t size_of_burst;
+  /* A pointer to a register setup exported from SmartRF */
+  const cc1200_register_settings_t *reconf_settings;
+  /* The size of the register setup */
+  size_t size_of_reconfig_settings;
+  /* A pointer to a register setup exported from SmartRF */
   const cc1200_register_settings_t *register_settings;
   /* The size of the register setup */
   size_t size_of_register_settings;
@@ -100,4 +108,6 @@ typedef struct cc1200_rf_cfg {
   const uint16_t *tsch_timing;
 } cc1200_rf_cfg_t;
 /*---------------------------------------------------------------------------*/
+const cc1200_rf_cfg_t cc1200_802154g_863_870_fsk_50kbps;
+const cc1200_rf_cfg_t cc1200_868_4gfsk_1000kbps;
 #endif /* CC1200_RF_CFG_H  */

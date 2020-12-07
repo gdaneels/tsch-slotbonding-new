@@ -201,6 +201,7 @@ static rtimer_clock_t sfd_timestamp = 0;
 /*---------------------------------------------------------------------------*/
 /* Import the rf configuration set by CC1200_RF_CFG */
 extern const cc1200_rf_cfg_t CC1200_RF_CFG;
+cc1200_rf_cfg_t const* current_cc1200_rf_cfg  = &CC1200_RF_CFG;
 /*---------------------------------------------------------------------------*/
 /* This defines the way we calculate the frequency registers */
 /*---------------------------------------------------------------------------*/
@@ -423,6 +424,9 @@ static struct etimer et;
 /* Init the radio. */
 static int
 init(void);
+/* Reconfigure the radio to a new PHY. */
+static int
+reconfigure(const void *radio_conf);
 /* Prepare and copy PHY header to Tx FIFO */
 static int
 copy_header_to_tx_fifo(unsigned short payload_len);
@@ -473,6 +477,7 @@ set_object(radio_param_t param, const void *src, size_t size);
 /*---------------------------------------------------------------------------*/
 const struct radio_driver cc1200_driver = {
   init,
+  reconfigure,
   prepare,
   transmit,
   send,
@@ -710,6 +715,33 @@ init(void)
 
   return 1;
 
+}
+/*---------------------------------------------------------------------------*/
+/* Reconfigure radio to a new PHY. */
+static int
+reconfigure(const void *radio_conf){
+  /* TODO: check if radio_conf is of type cc1200_rf_cfg_t, can we do this? */
+  if((*(cc1200_rf_cfg_t *)radio_conf).cfg_descriptor != NULL){
+    current_cc1200_rf_cfg = (cc1200_rf_cfg_t *)radio_conf;
+    LOCK_SPI();
+//    burst_write(0x0008,(*current_cc1200_rf_cfg).reconf_settings_burst,(*current_cc1200_rf_cfg).size_of_burst);
+//    write_reg_settings((*current_cc1200_rf_cfg).reconf_settings,
+//                       (*current_cc1200_rf_cfg).size_of_reconfig_settings);
+    configure();
+    rf_flags |= (RF_INITIALIZED + RF_ON);
+    RELEASE_SPI();
+	  /* Set channel. This will also force initial calibration! */
+	  set_channel(0);
+	  /* We have to call off() before on() because on() relies on the
+	   * configuration of the GPIO0 pin */
+	  off();
+    return 1;
+  } else {
+    ERROR("Argument not of cc1200_rf_cfg_t type! Falling back to default PHY...");
+    init();
+    current_cc1200_rf_cfg = &CC1200_RF_CFG;
+    return 0;
+  }
 }
 /*---------------------------------------------------------------------------*/
 /* Prepare the radio with a packet to be sent. */
