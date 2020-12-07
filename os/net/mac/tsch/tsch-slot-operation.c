@@ -54,6 +54,8 @@
 #include "net/mac/tsch/tsch.h"
 #include "sys/critical.h"
 
+#include "dev/radio/cc1200/cc1200-rf-cfg.h"
+
 #include "sys/log.h"
 /* TSCH debug macros, i.e. to set LEDs or GPIOs on various TSCH
  * timeslot events */
@@ -167,6 +169,19 @@ static struct tsch_neighbor *current_neighbor = NULL;
 static int burst_link_scheduled = 0;
 /* Counts the length of the current burst */
 int tsch_current_burst_count = 0;
+
+const void *tsch_default_radio_conf = &cc1200_802154g_863_870_fsk_50kbps;
+const void *tsch_radio_conf_0 = &cc1200_868_4gfsk_1000kbps;
+radio_value_t default_delay = 0;
+radio_value_t *delay_before_tx = &default_delay;
+static void *new_tsch_timing = &tsch_timing_us;
+
+#if TSCH_SLOTBONDING
+//uint8_t slotbonding_stats_count = 0;
+uint16_t slotbonding_num_tx = 0;
+uint16_t slotbonding_num_ack = 0;
+//uint16_t slotbonding_etx_emwa = 0;
+#endif
 
 /* Protothread for association */
 PT_THREAD(tsch_scan(struct pt *pt));
@@ -397,8 +412,13 @@ tsch_get_network_uptime_ticks(void)
   status = critical_enter();
 
   uptime_asn = last_sync_asn.ls4b + ((uint64_t)last_sync_asn.ms1b << 32);
+//#if TSCH_SLOTBONDING
+//	/* first calculate the at the uptime at the last sync in rtimer ticks */
+//  uptime_ticks = uptime_asn * tsch_sb_default_timing[tsch_ts_timeslot_length];
+//#else
   /* first calculate the at the uptime at the last sync in rtimer ticks */
   uptime_ticks = uptime_asn * tsch_timing[tsch_ts_timeslot_length];
+//#endif
   /* then convert to clock ticks (assume that CLOCK_SECOND divides RTIMER_ARCH_SECOND) */
   uptime_ticks /= (RTIMER_ARCH_SECOND / CLOCK_SECOND);
   /* then add the ticks passed since the last timesync */
@@ -470,6 +490,38 @@ tsch_radio_off(enum tsch_radio_state_off_cmd command)
     NETSTACK_RADIO.off();
   }
 }
+
+/*---------------------------------------------------------------------------*/
+/**
+ * This function updates the TSCH timing and radio delay
+ */
+static void
+update_timing_delay()
+{
+    if(NETSTACK_RADIO.get_object(RADIO_CONST_TSCH_TIMING, new_tsch_timing, sizeof(uint16_t *)) != RADIO_RESULT_OK){
+        TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"TSCH timing not updated"));
+    } else {
+        tsch_update_timing(*(uint16_t **)new_tsch_timing);
+    }
+    if(NETSTACK_RADIO.get_value(RADIO_CONST_DELAY_BEFORE_TX, delay_before_tx) != RADIO_RESULT_OK){
+        TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"TX delay not updated"));
+    }
+}
+/*---------------------------------------------------------------------------*/
+//#if ATSCH_MULTIPHY
+/**
+ * This function reconfigures the radio to a new PHY, whilst updating the
+ * associated TSCH timing and radio TX delay
+ */
+static void
+reconfigure(void const *new_phy)
+{
+    if(!NETSTACK_RADIO.reconfigure(new_phy)){
+        TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"Reconfiguration failed"));
+    }
+    update_timing_delay();
+}
+
 /*---------------------------------------------------------------------------*/
 static
 PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
@@ -580,7 +632,11 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
 #endif /* TSCH_CCA_ENABLED */
         {
           /* delay before TX */
+#if TSCH_SLOTBONDING
+		  TSCH_SCHEDULE_AND_YIELD(pt, t, current_slot_start, tsch_timing[tsch_ts_tx_offset] - (rtimer_clock_t)(*delay_before_tx), "TxBeforeTx");
+#else
           TSCH_SCHEDULE_AND_YIELD(pt, t, current_slot_start, tsch_timing[tsch_ts_tx_offset] - RADIO_DELAY_BEFORE_TX, "TxBeforeTx");
+#endif
           TSCH_DEBUG_TX_EVENT();
           /* send packet already in radio tx buffer */
           mac_tx_status = NETSTACK_RADIO.transmit(packet_len);
@@ -697,6 +753,7 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
                 }
               } else {
                 mac_tx_status = MAC_TX_NOACK;
+                TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"Ack length: 0"););
               }
             } else {
               mac_tx_status = MAC_TX_OK;
@@ -729,6 +786,16 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
       tsch_stats_tx_packet(current_neighbor, mac_tx_status, tsch_current_channel);
     }
 
+
+#if TSCH_SLOTBONDING
+	  if (current_neighbor != NULL && current_neighbor->is_time_source && ((((uint8_t *)(queuebuf_dataptr(current_packet->qb)))[0]) & 7) == FRAME802154_DATAFRAME) {
+			slotbonding_num_tx += 1;
+			if (mac_tx_status == MAC_TX_OK) {
+				slotbonding_num_ack += 1;
+			}
+}
+#endif
+
     /* Log every tx attempt */
     TSCH_LOG_ADD(tsch_log_tx,
         log->tx.mac_tx_status = mac_tx_status;
@@ -744,6 +811,9 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
 #endif /* LLSEC802154_ENABLED */
         linkaddr_copy(&log->tx.dest, queuebuf_addr(current_packet->qb, PACKETBUF_ADDR_RECEIVER));
         log->tx.seqno = queuebuf_attr(current_packet->qb, PACKETBUF_ATTR_MAC_SEQNO);
+#if TSCH_SLOTBONDING
+	  log->tx.phy = current_link->current_phy;
+#endif
     );
 
     /* Poll process for later processing of packet sent events and logs */
@@ -930,9 +1000,15 @@ PT_THREAD(tsch_rx_slot(struct pt *pt, struct rtimer *t))
                 /* Copy to radio buffer */
                 NETSTACK_RADIO.prepare((const void *)ack_buf, ack_len);
 
+#if TSCH_SLOTBONDING
+                /* Wait for time to ACK and transmit ACK */
+                TSCH_SCHEDULE_AND_YIELD(pt, t, rx_start_time,
+                                        packet_duration + tsch_timing[tsch_ts_tx_ack_delay] - (rtimer_clock_t)(*delay_before_tx), "RxBeforeAck");
+#else
                 /* Wait for time to ACK and transmit ACK */
                 TSCH_SCHEDULE_AND_YIELD(pt, t, rx_start_time,
                                         packet_duration + tsch_timing[tsch_ts_tx_ack_delay] - RADIO_DELAY_BEFORE_TX, "RxBeforeAck");
+#endif
                 TSCH_DEBUG_RX_EVENT();
                 NETSTACK_RADIO.transmit(ack_len);
                 tsch_radio_off(TSCH_RADIO_CMD_OFF_WITHIN_TIMESLOT);
@@ -977,6 +1053,9 @@ PT_THREAD(tsch_rx_slot(struct pt *pt, struct rtimer *t))
               log->rx.sec_level = frame.aux_hdr.security_control.security_level;
               log->rx.estimated_drift = estimated_drift;
               log->rx.seqno = frame.seq;
+#if TSCH_SLOTBONDING
+			  log->rx.phy = current_link->current_phy;
+#endif
             );
           }
 
@@ -1025,35 +1104,52 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
       );
 
     } else {
-      int is_active_slot;
-      TSCH_DEBUG_SLOT_START();
-      tsch_in_slot_operation = 1;
-      /* Measure on-air noise level while TSCH is idle */
-      tsch_stats_sample_rssi();
-      /* Reset drift correction */
-      drift_correction = 0;
-      is_drift_correction_used = 0;
-      /* Get a packet ready to be sent */
-      current_packet = get_packet_and_neighbor_for_link(current_link, &current_neighbor);
-      uint8_t do_skip_best_link = 0;
-      if(current_packet == NULL && backup_link != NULL) {
-        /* There is no packet to send, and this link does not have Rx flag. Instead of doing
-         * nothing, switch to the backup link (has Rx flag) if any
-         * and if the current link cannot Rx or both links can Rx, but the backup link has priority. */
-        if(!(current_link->link_options & LINK_OPTION_RX)
-            || backup_link->slotframe_handle < current_link->slotframe_handle) {
-          do_skip_best_link = 1;
-        }
-      }
+		int is_active_slot;
+		TSCH_DEBUG_SLOT_START();
+		tsch_in_slot_operation = 1;
+		/* Measure on-air noise level while TSCH is idle */
+		tsch_stats_sample_rssi();
+		/* Reset drift correction */
+		drift_correction = 0;
+		is_drift_correction_used = 0;
+		/* Get a packet ready to be sent */
+		current_packet = get_packet_and_neighbor_for_link(current_link, &current_neighbor);
+		uint8_t do_skip_best_link = 0;
+		if (current_packet == NULL && backup_link != NULL) {
+			/* There is no packet to send, and this link does not have Rx flag. Instead of doing
+			 * nothing, switch to the backup link (has Rx flag) if any
+			 * and if the current link cannot Rx or both links can Rx, but the backup link has priority. */
+			if (!(current_link->link_options & LINK_OPTION_RX)
+				|| backup_link->slotframe_handle < current_link->slotframe_handle) {
+				do_skip_best_link = 1;
+			}
+		}
 
-      if(do_skip_best_link) {
-        /* skipped a Tx link, refresh its backoff */
-        update_link_backoff(current_link);
+		if (do_skip_best_link) {
+			/* skipped a Tx link, refresh its backoff */
+			update_link_backoff(current_link);
 
-        current_link = backup_link;
-        current_packet = get_packet_and_neighbor_for_link(current_link, &current_neighbor);
-      }
-      is_active_slot = current_packet != NULL || (current_link->link_options & LINK_OPTION_RX);
+			current_link = backup_link;
+			current_packet = get_packet_and_neighbor_for_link(current_link, &current_neighbor);
+		}
+		is_active_slot = current_packet != NULL || (current_link->link_options & LINK_OPTION_RX);
+
+#if TSCH_SLOTBONDING
+		if (current_link->current_phy == TSCH_SLOTBONDING_50_KBPS_PHY) {
+//  			TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message), "Reconfigure to 50 kbps PHY. \n"));
+			reconfigure(tsch_default_radio_conf);
+		} else if (current_link->current_phy == TSCH_SLOTBONDING_1000_KBPS_PHY) {
+//  			TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message), "Reconfigure to 1000 kbps PHY. \n"));
+	        reconfigure(tsch_radio_conf_0); // reconfigure radio
+		} else {
+	        TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message), "Else reconfigure... \n"));
+	        reconfigure(tsch_radio_conf_0);
+//	        exit();
+	    }
+#endif // TSCH_SLOTBONDING
+
+
+
       if(is_active_slot) {
         /* If we are in a burst, we stick to current channel instead of
          * doing channel hopping, as per IEEE 802.15.4-2015 */
@@ -1076,6 +1172,10 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
            * 2. update_backoff_state(current_neighbor)
            * 3. post tx callback
            **/
+			TSCH_LOG_ADD(tsch_log_message,
+						 snprintf(log->message, sizeof(log->message),
+								  "slot length: %u", tsch_timing_us[tsch_ts_timeslot_length]);
+			);
           static struct pt slot_tx_pt;
           PT_SPAWN(&slot_operation_pt, &slot_tx_pt, tsch_tx_slot(&slot_tx_pt, t));
         } else {
@@ -1100,9 +1200,15 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
       tsch_last_sync_time = clock_time();
     }
 
+//#if TSCH_SLOTBONDING
+//	  /* Do we need to resynchronize? i.e., wait for EB again */
+//    if(!tsch_is_coordinator && (TSCH_ASN_DIFF(tsch_current_asn, last_sync_asn) >
+//        (100 * TSCH_CLOCK_TO_SLOTS(TSCH_DESYNC_THRESHOLD / 100, tsch_sb_default_timing[tsch_ts_timeslot_length])))) {
+//#else
     /* Do we need to resynchronize? i.e., wait for EB again */
     if(!tsch_is_coordinator && (TSCH_ASN_DIFF(tsch_current_asn, last_sync_asn) >
         (100 * TSCH_CLOCK_TO_SLOTS(TSCH_DESYNC_THRESHOLD / 100, tsch_timing[tsch_ts_timeslot_length])))) {
+//#endif
       TSCH_LOG_ADD(tsch_log_message,
             snprintf(log->message, sizeof(log->message),
                 "! leaving the network, last sync %u",
@@ -1143,8 +1249,14 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
 
         /* Update ASN */
         TSCH_ASN_INC(tsch_current_asn, timeslot_diff);
-        /* Time to next wake up */
+//#if TSCH_SLOTBONDING
+//		  /* Time to next wake up */
+//      /* Use the slotbonding default slot size */
+//        time_to_next_active_slot = timeslot_diff * tsch_sb_default_timing[tsch_ts_timeslot_length] + drift_correction;
+//#else
+		  /* Time to next wake up */
         time_to_next_active_slot = timeslot_diff * tsch_timing[tsch_ts_timeslot_length] + drift_correction;
+//#endif
         time_to_next_active_slot += tsch_timesync_adaptive_compensate(time_to_next_active_slot);
         drift_correction = 0;
         is_drift_correction_used = 0;
@@ -1181,8 +1293,14 @@ tsch_slot_operation_start(void)
     }
     /* Update ASN */
     TSCH_ASN_INC(tsch_current_asn, timeslot_diff);
+//#if TSCH_SLOTBONDING
+//	  /* Time to next wake up */
+//      /* Use the slotbonding default slot size */
+//      time_to_next_active_slot = timeslot_diff * tsch_sb_default_timing[tsch_ts_timeslot_length];
+//#else
     /* Time to next wake up */
     time_to_next_active_slot = timeslot_diff * tsch_timing[tsch_ts_timeslot_length];
+//#endif
     /* Compensate for the base drift */
     time_to_next_active_slot += tsch_timesync_adaptive_compensate(time_to_next_active_slot);
     /* Update current slot start */

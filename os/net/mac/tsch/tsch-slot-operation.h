@@ -60,6 +60,13 @@ extern clock_time_t tsch_last_sync_time;
 /* Counts the length of the current burst */
 extern int tsch_current_burst_count;
 
+
+#if TSCH_SLOTBONDING
+uint16_t slotbonding_num_tx;
+uint16_t slotbonding_num_ack;
+#endif
+
+
 /********** Functions *********/
 
 /**
