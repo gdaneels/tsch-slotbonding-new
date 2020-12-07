@@ -47,16 +47,19 @@
 
 /* Log configuration */
 #include "sys/log.h"
+#include "net/mac/tsch/tsch.h"
+#include "net/mac/tsch/tsch-asn.h"
+#include "net/mac/tsch/tsch-slot-operation.h"
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
 /* Configuration */
-#define SEND_INTERVAL (8 * CLOCK_SECOND)
-static linkaddr_t dest_addr =         {{ 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }};
+#define SEND_INTERVAL (1 * CLOCK_SECOND)
+static linkaddr_t dest_addr =         {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe3, 0x20}};
 
 #if MAC_CONF_WITH_TSCH
 #include "net/mac/tsch/tsch.h"
-static linkaddr_t coordinator_addr =  {{ 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }};
+static linkaddr_t coordinator_addr =  {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe3, 0x20}};
 #endif /* MAC_CONF_WITH_TSCH */
 
 /*---------------------------------------------------------------------------*/
@@ -75,6 +78,26 @@ void input_callback(const void *data, uint16_t len,
     LOG_INFO_("\n");
   }
 }
+
+void print_transmission_information() {
+	if (slotbonding_num_ack > 10) {
+		LOG_INFO_(" (ETX = %"
+		PRIu16
+		", NUM_TX = %"
+		PRIu16
+		", NUM_ACK = %"
+		PRIu16
+		")\n", (uint16_t)(slotbonding_num_tx / slotbonding_num_ack),
+				slotbonding_num_tx, slotbonding_num_ack);
+	} else {
+		LOG_INFO_(" (ETX = UNDEFINED, NUM_TX = %"
+		PRIu16
+		", NUM_ACK = %"
+		PRIu16
+		")\n", slotbonding_num_tx, slotbonding_num_ack);
+	}
+}
+
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(nullnet_example_process, ev, data)
 {
@@ -99,6 +122,7 @@ PROCESS_THREAD(nullnet_example_process, ev, data)
       LOG_INFO("Sending %u to ", count);
       LOG_INFO_LLADDR(&dest_addr);
       LOG_INFO_("\n");
+      print_transmission_information();
 
       NETSTACK_NETWORK.output(&dest_addr);
       count++;
