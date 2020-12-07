@@ -67,6 +67,8 @@
 /* 1 channel, sequence length 1 */
 #define TSCH_HOPPING_SEQUENCE_1_1 (uint8_t[]){ 20 }
 
+#define TSCH_HOPPING_SEQUENCE_1_1_0 (uint8_t[]){ 21 }
+
 /* Max TSCH packet length equal to the length of the packet buffer */
 #define TSCH_PACKET_MAX_LEN PACKETBUF_SIZE
 
@@ -75,8 +77,12 @@
  * */
 #define TSCH_TIMESYNC_MEASUREMENT_ERROR US_TO_RTIMERTICKS(32)
 
+//#if TSCH_SLOTBONDING
+//#define TSCH_SLOTS_PER_SECOND (1000000 / tsch_sb_default_timing_us[tsch_ts_timeslot_length])
+//#else
 /* The approximate number of slots per second */
 #define TSCH_SLOTS_PER_SECOND (1000000 / tsch_timing_us[tsch_ts_timeslot_length])
+//#endif
 
 /* Calculate packet tx/rx duration in rtimer ticks based on packet length in bytes. */
 #define TSCH_PACKET_DURATION(len) US_TO_RTIMERTICKS(RADIO_BYTE_AIR_TIME * ((len) + RADIO_PHY_OVERHEAD))
