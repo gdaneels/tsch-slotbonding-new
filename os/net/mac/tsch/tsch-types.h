@@ -78,6 +78,10 @@ struct tsch_link {
   enum link_type link_type;
   /* Any other data for upper layers */
   void *data;
+#if TSCH_SLOTBONDING
+    /* Current PHY assigned to this link */
+  uint8_t current_phy;
+#endif
 };
 
 /** \brief 802.15.4e slotframe (contains links) */
@@ -119,6 +123,10 @@ struct tsch_neighbor {
   struct tsch_packet *tx_array[TSCH_QUEUE_NUM_PER_NEIGHBOR];
   /* Circular buffer of pointers to packet. */
   struct ringbufindex tx_ringbuf;
+#if TSCH_SLOTBONDING
+    /* Current PHY assigned to this link */
+  uint8_t current_phy;
+#endif
 };
 
 /** \brief TSCH timeslot timing elements. Used to index timeslot timing
