@@ -97,6 +97,9 @@ tsch_log_process_pending(void)
         log_lladdr_compact(&log->tx.dest);
         printf(", len %3u, seq %3u, st %d %2d",
                 log->tx.datalen, log->tx.seqno, log->tx.mac_tx_status, log->tx.num_tx);
+#if TSCH_SLOTBONDING
+        printf(", phy %d", log->tx.phy);
+#endif
         if(log->tx.drift_used) {
           printf(", dr %3d", log->tx.drift);
         }
@@ -111,6 +114,9 @@ tsch_log_process_pending(void)
         printf(", len %3u, seq %3u",
                 log->rx.datalen, log->rx.seqno);
         printf(", edr %3d", (int)log->rx.estimated_drift);
+#if TSCH_SLOTBONDING
+        printf(", phy %d", log->rx.phy);
+#endif
         if(log->rx.drift_used) {
           printf(", dr %3d\n", log->rx.drift);
         } else {
