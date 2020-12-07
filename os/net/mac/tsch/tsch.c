@@ -58,6 +58,8 @@
 #include "lib/random.h"
 #include "net/routing/routing.h"
 
+#include "dev/radio/cc1200/cc1200-rf-cfg.h"
+
 #if TSCH_WITH_SIXTOP
 #include "net/mac/tsch/sixtop/sixtop.h"
 #endif
@@ -98,6 +100,13 @@ static const uint16_t *tsch_default_timing_us;
 uint16_t tsch_timing_us[tsch_ts_elements_count];
 /* TSCH timeslot timing (in rtimer ticks) */
 rtimer_clock_t tsch_timing[tsch_ts_elements_count];
+
+#if TSCH_SLOTBONDING
+/* TSCH timeslot timing (in micro-second) */
+uint16_t tsch_sb_default_timing_us[tsch_ts_elements_count];
+/* TSCH timeslot timing (in rtimer ticks) */
+rtimer_clock_t tsch_sb_default_timing[tsch_ts_elements_count];
+#endif
 
 #if LINKADDR_SIZE == 8
 /* 802.15.4 broadcast MAC address  */
@@ -199,6 +208,13 @@ tsch_set_eb_period(uint32_t period)
   tsch_current_eb_period = MIN(period, TSCH_MAX_EB_PERIOD);
 }
 /*---------------------------------------------------------------------------*/
+void tsch_update_timing(uint16_t *new_tsch_timing){
+  for(int i = 0; i < tsch_ts_elements_count; i++) {
+    tsch_timing_us[i] = new_tsch_timing[i];
+    tsch_timing[i] = US_TO_RTIMERTICKS(tsch_timing_us[i]);
+  }
+}
+/*---------------------------------------------------------------------------*/
 static void
 tsch_reset(void)
 {
@@ -217,10 +233,19 @@ tsch_reset(void)
   current_link = NULL;
   /* Reset timeslot timing to defaults */
   tsch_default_timing_us = TSCH_DEFAULT_TIMESLOT_TIMING;
+//#if TSCH_SLOTBONDING
+//  tsch_default_timing_us = TSCH_SLOTBONDING_DEFAULT_TIMINGS_US;
+//#endif
   for(i = 0; i < tsch_ts_elements_count; i++) {
     tsch_timing_us[i] = tsch_default_timing_us[i];
     tsch_timing[i] = US_TO_RTIMERTICKS(tsch_timing_us[i]);
   }
+//#ifdef TSCH_SLOTBONDING
+//  for(i = 0; i < tsch_ts_elements_count; i++) {
+//		tsch_sb_default_timing_us[i] = TSCH_SLOTBONDING_DEFAULT_TIMINGS_US[i];
+//		tsch_sb_default_timing[i] = US_TO_RTIMERTICKS(tsch_sb_default_timing_us[i]);
+//	}
+//#endif
 #ifdef TSCH_CALLBACK_LEAVING_NETWORK
   TSCH_CALLBACK_LEAVING_NETWORK();
 #endif
@@ -387,7 +412,9 @@ tsch_keepalive_process_pending(void)
 static void
 eb_input(struct input_packet *current_input)
 {
-  /* LOG_INFO("EB received\n"); */
+#if TSCH_SLOTBONDING
+  LOG_INFO("EB received\n");
+#endif
   frame802154_t frame;
   /* Verify incoming EB (does its ASN match our Rx time?),
    * and update our join priority. */
@@ -692,7 +719,11 @@ tsch_associate(const struct input_packet *input_eb, rtimer_clock_t timestamp)
             ies.ie_tsch_slotframe_and_link.links[i].link_options,
             LINK_TYPE_ADVERTISING, &tsch_broadcast_address,
             ies.ie_tsch_slotframe_and_link.links[i].timeslot,
-            ies.ie_tsch_slotframe_and_link.links[i].channel_offset, 1);
+            ies.ie_tsch_slotframe_and_link.links[i].channel_offset, 1
+            #if TSCH_SLOTBONDING
+            , TSCH_SLOTBONDING_50_KBPS_PHY
+			#endif
+			);
       }
     } else {
       LOG_ERR("! parse_eb: too many links in schedule (%u)\n", num_links);
@@ -714,7 +745,12 @@ tsch_associate(const struct input_packet *input_eb, rtimer_clock_t timestamp)
       frame802154_set_pan_id(frame.src_pid);
 
       /* Synchronize on EB */
+//#if TSCH_SLOTBONDING
+//      // here you have to use the timings of the associate PHY
+//		tsch_slot_operation_sync(timestamp - US_TO_RTIMERTICKS(TSCH_SLOTBONDING_ASSOCIATE.tsch_timing[tsch_ts_tx_offset]), &tsch_current_asn);
+//#else
       tsch_slot_operation_sync(timestamp - tsch_timing[tsch_ts_tx_offset], &tsch_current_asn);
+//#endif
 
       /* Update global flags */
       tsch_is_associated = 1;

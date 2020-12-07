@@ -180,6 +180,13 @@ extern int32_t max_drift_seen;
 /* The TSCH standard 10ms timeslot timing */
 extern const tsch_timeslot_timing_usec tsch_timeslot_timing_us_10000;
 
+//#if TSCH_SLOTBONDING
+///* TSCH default timeslot timing (in micro-second) */
+//extern tsch_timeslot_timing_usec tsch_sb_default_timing_us;
+///* TSCH default timeslot timing (in rtimer ticks) */
+//extern tsch_timeslot_timing_ticks tsch_sb_default_timing;
+//#endif
+
 /* TSCH processes */
 PROCESS_NAME(tsch_process);
 PROCESS_NAME(tsch_send_eb_process);
@@ -250,6 +257,9 @@ uint64_t tsch_get_network_uptime_ticks(void);
   * Leave the TSCH network we are currently in
   */
 void tsch_disassociate(void);
-
+/**
+  * Update TSCH timings
+  */
+void tsch_update_timing(uint16_t *timing);
 #endif /* __TSCH_H__ */
 /** @} */
