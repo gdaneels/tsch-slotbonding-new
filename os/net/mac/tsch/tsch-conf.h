@@ -375,6 +375,43 @@
 #define TSCH_LINK_COMPARATOR(a, b) default_tsch_link_comparator(a, b)
 #endif
 
+/* TSCH SLOT BONDING MODE */
+#ifdef TSCH_CONF_SLOTBONDING
+#define TSCH_SLOTBONDING TSCH_CONF_SLOTBONDING
+#else
+#define TSCH_SLOTBONDING 0
+#endif
+
+//#ifdef TSCH_CONF_SLOTBONDING_DEFAULT_TIMINGS_US
+//#define TSCH_SLOTBONDING_DEFAULT_TIMINGS_US TSCH_CONF_SLOTBONDING_DEFAULT_TIMINGS_US
+//#else
+//#define TSCH_SLOTBONDING_DEFAULT_TIMINGS_US cc1200_868_4gfsk_1000kbps.tsch_timing
+//#endif
+
+#ifdef TSCH_CONF_SLOTBONDING_1000_KBPS_PHY
+#define TSCH_SLOTBONDING_1000_KBPS_PHY TSCH_CONF_SLOTBONDING_1000_KBPS_PHY  // should be max 4 bits, is used in 6P cell options
+#else
+#define TSCH_SLOTBONDING_1000_KBPS_PHY 0x0 // should be max 4 bits, is used in 6P cell options
+#endif
+
+#ifdef TSCH_CONF_SLOTBONDING_50_KBPS_PHY
+#define TSCH_SLOTBONDING_50_KBPS_PHY TSCH_CONF_SLOTBONDING_50_KBPS_PHY // should be max 4 bits, is used in 6P cell options
+#else
+#define TSCH_SLOTBONDING_50_KBPS_PHY 0x1 // should be max 4 bits, is used in 6P cell options
+#endif
+
+//#ifdef TSCH_CONF_SLOTBONDING_ASSOCIATE
+//#define TSCH_SLOTBONDING_ASSOCIATE TSCH_CONF_SLOTBONDING_ASSOCIATE
+//#else
+//#define TSCH_SLOTBONDING_ASSOCIATE cc1200_mulphy_863_870_2GFSK_50kbps_sb
+//#endif
+
+#ifdef TSCH_CONF_FORCE_TOPOLOGY
+#define TSCH_FORCE_TOPOLOGY TSCH_CONF_FORCE_TOPOLOGY
+#else
+#define TSCH_FORCE_TOPOLOGY 0
+#endif
+
 /******** Configuration: CSMA *******/
 
 /* TSCH CSMA-CA parameters, see IEEE 802.15.4e-2012 */
