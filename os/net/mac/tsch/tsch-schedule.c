@@ -56,6 +56,10 @@
 #include "sys/rtimer.h"
 #include <string.h>
 
+#if TSCH_SLOTBONDING
+#include "dev/radio/cc1200/cc1200-rf-cfg.h"
+#endif
+
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "TSCH Sched"
@@ -215,7 +219,11 @@ print_link_type(uint16_t link_type)
 struct tsch_link *
 tsch_schedule_add_link(struct tsch_slotframe *slotframe,
                        uint8_t link_options, enum link_type link_type, const linkaddr_t *address,
-                       uint16_t timeslot, uint16_t channel_offset, uint8_t do_remove)
+                       uint16_t timeslot, uint16_t channel_offset, uint8_t do_remove
+#if TSCH_SLOTBONDING
+        , uint8_t phy
+#endif
+)
 {
   struct tsch_link *l = NULL;
   if(slotframe != NULL) {
@@ -226,6 +234,22 @@ tsch_schedule_add_link(struct tsch_slotframe *slotframe,
       LOG_ERR("! add_link invalid timeslot: %u\n", timeslot);
       return NULL;
     }
+
+//#if TSCH_SLOTBONDING
+//	  uint8_t len_bonded_slot = 1;
+//	if (phy == TSCH_CONF_SLOTBONDING_50_KBPS_PHY) {
+//		len_bonded_slot = cc1200_802154g_863_870_fsk_50kbps.tsch_timing[tsch_ts_timeslot_length] / TSCH_SLOTBONDING_DEFAULT_TIMINGS_US[tsch_ts_timeslot_length];
+//	} else if (phy == TSCH_CONF_SLOTBONDING_1000_KBPS_PHY) {
+//		len_bonded_slot = cc1200_868_4gfsk_1000kbps.tsch_timing[tsch_ts_timeslot_length] / TSCH_SLOTBONDING_DEFAULT_TIMINGS_US[tsch_ts_timeslot_length];
+//	} else {
+//	    LOG_ERR("! add_link invalid phy: %u\n", phy);
+//		return NULL;
+//	}
+//	if ((timeslot + len_bonded_slot - 1) > (slotframe->size.val - 1)) {
+//	    LOG_ERR("! add_link invalid bonded slot %u, len %u, sf max %u\n", timeslot, len_bonded_slot, (slotframe->size.val - 1));
+//		return NULL;
+//	}
+//#endif
 
     if(do_remove) {
       /* Start with removing the link currently installed at this timeslot (needed
@@ -252,15 +276,24 @@ tsch_schedule_add_link(struct tsch_slotframe *slotframe,
         l->timeslot = timeslot;
         l->channel_offset = channel_offset;
         l->data = NULL;
+#if TSCH_SLOTBONDING
+        l->current_phy = phy;
+#endif
         if(address == NULL) {
           address = &linkaddr_null;
         }
         linkaddr_copy(&l->addr, address);
-
+#if TSCH_SLOTBONDING
+		  LOG_INFO("add_link sf=%u opt=%s type=%s ts=%u ch=%u phy=%u addr=",
+                 slotframe->handle,
+                 print_link_options(link_options),
+                 print_link_type(link_type), timeslot, channel_offset, phy);
+#else
         LOG_INFO("add_link sf=%u opt=%s type=%s ts=%u ch=%u addr=",
                  slotframe->handle,
                  print_link_options(link_options),
                  print_link_type(link_type), timeslot, channel_offset);
+#endif
         LOG_INFO_LLADDR(address);
         LOG_INFO_("\n");
         /* Release the lock before we update the neighbor (will take the lock) */
@@ -512,10 +545,38 @@ tsch_schedule_create_minimal(void)
    * We set the link type to advertising, which is not compliant with 6TiSCH minimal schedule
    * but is required according to 802.15.4e if also used for EB transmission.
    * Timeslot: 0, channel offset: 0. */
+  static linkaddr_t coordinator_addr =  {{ 0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe3, 0x20 }};
+  static linkaddr_t orig_addr =  {{ 0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe4, 0xb2 }};
+
+
   tsch_schedule_add_link(sf_min,
       (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
       LINK_TYPE_ADVERTISING, &tsch_broadcast_address,
-      0, 0, 1);
+      0, 0, 1
+#if TSCH_SLOTBONDING
+          , TSCH_SLOTBONDING_50_KBPS_PHY
+#endif
+  );
+
+  if (!tsch_is_coordinator) {
+    tsch_schedule_add_link(sf_min,
+                           (LINK_OPTION_TX),
+                           LINK_TYPE_NORMAL, &coordinator_addr,
+                           4, 0, 0
+#if TSCH_SLOTBONDING
+            , TSCH_SLOTBONDING_50_KBPS_PHY
+#endif
+    );
+  } else {
+    tsch_schedule_add_link(sf_min,
+                           (LINK_OPTION_RX),
+                           LINK_TYPE_NORMAL, &orig_addr,
+                           4, 0, 0
+#if TSCH_SLOTBONDING
+            , TSCH_SLOTBONDING_50_KBPS_PHY
+#endif
+    );
+  }
 }
 /*---------------------------------------------------------------------------*/
 struct tsch_slotframe *
