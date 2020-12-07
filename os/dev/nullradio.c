@@ -11,6 +11,11 @@ init(void)
 {
   return 0;
 }
+static int
+reconfigure(const void *radio_conf)
+{
+  return 0;
+}
 /*---------------------------------------------------------------------------*/
 static int
 prepare(const void *payload, unsigned short payload_len)
@@ -104,6 +109,7 @@ set_object(radio_param_t param, const void *src, size_t size)
 const struct radio_driver nullradio_driver =
   {
     init,
+    reconfigure,
     prepare,
     transmit,
     send,

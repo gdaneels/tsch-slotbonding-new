@@ -546,6 +546,9 @@ struct radio_driver {
    */
   int (* init)(void);
 
+  /** Reconfigure the radio to a new PHY. */
+  int (* reconfigure)(const void *radio_conf);
+
   /**
    * Prepare the radio with a packet to be sent.
    *
