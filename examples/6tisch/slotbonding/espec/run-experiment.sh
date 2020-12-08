@@ -48,7 +48,7 @@ cd ~/tsch-slotbonding-new/examples/6tisch/slotbonding
 # build the software
 if [ ! -s ${ERROR_FILE} ]; then
         make TARGET=zoul BOARD=remote-revb node 1>>${LOG_FILE} 2>>${ERROR_FILE}
-        make PORT=/dev/ttyUSB0 node.upload 1>>${LOG_FILE} 2>>${ERROR_FILE}
+        make TARGET=zoul BOARD=remote-revb PORT=/dev/ttyUSB0 node.upload 1>>${LOG_FILE} 2>>${ERROR_FILE}
 else
         echo "Did not run make command because there was an error before." >> ${ERROR_FILE}
 fi
