@@ -41,13 +41,14 @@
  */
 
  /* Base frequency in kHz */
- #define RF_CFG_CHAN_CENTER_F0           863125
+// #define RF_CFG_CHAN_CENTER_F0           863125
+ #define RF_CFG_CHAN_CENTER_F0           864975
  /* Channel spacing in Hz */
  #define RF_CFG_CHAN_SPACING             1666667
 /* The minimum channel */
 #define RF_CFG_MIN_CHANNEL              0
 /* The maximum channel */
-#define RF_CFG_MAX_CHANNEL              3
+#define RF_CFG_MAX_CHANNEL              1
 /* The maximum output power in dBm */
 #define RF_CFG_MAX_TXPOWER              CC1200_CONST_TX_POWER_MAX
 /* The carrier sense level used for CCA in dBm */
