@@ -125,6 +125,10 @@ struct network_driver {
 
   /** Output funtion, sends from uipbuf. */
   uint8_t (*output)(const linkaddr_t *localdest);
+#if TSCH_CONF_SLOTBONDING == 1
+    /** Output funtion, sends from uipbuf. */
+  uint8_t (*output_extra)(const linkaddr_t *localdest, const linkaddr_t *origsrc, const unsigned char* addr_and_count);
+#endif
 };
 
 extern const struct routing_driver NETSTACK_ROUTING;

@@ -99,12 +99,35 @@ output(const linkaddr_t *dest)
   NETSTACK_MAC.send(NULL, NULL);
   return 1;
 }
+#if TSCH_CONF_SLOTBONDING == 1
+static uint8_t
+output_extra(const linkaddr_t *dest, const linkaddr_t *src_addr, const unsigned char* addr_and_count)
+{
+  packetbuf_clear();
+//	uint16_t len_addr_and_count = sizeof(addr_and_count);
+  packetbuf_copyfrom(addr_and_count, 15);
+  if(dest != NULL) {
+    packetbuf_set_addr(PACKETBUF_ADDR_RECEIVER, dest);
+  } else {
+    packetbuf_set_addr(PACKETBUF_ADDR_RECEIVER, &linkaddr_null);
+  }
+  packetbuf_set_addr(PACKETBUF_ADDR_SENDER, &linkaddr_node_addr);
+  LOG_INFO("sending %u bytes to ", packetbuf_datalen());
+  LOG_INFO_LLADDR(packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
+  LOG_INFO_("\n");
+  NETSTACK_MAC.send(NULL, NULL);
+  return 1;
+}
+#endif
 /*--------------------------------------------------------------------*/
 const struct network_driver nullnet_driver = {
   "nullnet",
   init,
   input,
   output
+#if TSCH_CONF_SLOTBONDING == 1
+  ,output_extra
+#endif
 };
 /*--------------------------------------------------------------------*/
 /** @} */
