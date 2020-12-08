@@ -29,7 +29,8 @@
  */
 
 /**
- * \author  Dries Van Leemput <dries.vanleemput@ugent.be>
+ * \author Dries Van Leemput <dries.vanleemput@ugent.be>
+ * \author Glenn Daneels <glenn.daneels@uantwerpen.be>
  */
 
 #ifndef PROJECT_CONF_H_
@@ -62,10 +63,13 @@
 /******************* Configure TSCH ********************/
 /*******************************************************/
 
+#define QUEUEBUF_CONF_NUM 16
+#define TSCH_CONF_MAX_INCOMING_PACKETS 16
+
 #define TSCH_CONF_SLOTBONDING 1
 
 //#define TSCH_CONF_SLOTBONDING_DEFAULT_TIMINGS_US cc1200_802154g_863_870_fsk_50kbps.tsch_timing
-//#define TSCH_CONF_SLOTBONDING_DEFAULT_TIMINGS_US cc1200_868_4gfsk_1000kbps.tsch_timing
+#define TSCH_CONF_SLOTBONDING_DEFAULT_TIMINGS_US cc1200_868_4gfsk_1000kbps.tsch_timing
 
 #define TSCH_CONF_SLOTBONDING_1000_KBPS_PHY 0x0 // should be max 4 bits, is used in 6P cell options
 #define	TSCH_CONF_SLOTBONDING_50_KBPS_PHY 0x1 // should be max 4 bits, is used in 6P cell options
@@ -75,8 +79,17 @@
 //#define TSCH_CONF_SLOTBONDING_ASSOCIATE cc1200_802154g_863_870_fsk_50kbps
 //#define TSCH_CONF_SLOTBONDING_ASSOCIATE cc1200_868_4gfsk_1000kbps
 
+/* Force a topology using the tsch_topology.* functionality. */
+#define TSCH_CONF_FORCE_TOPOLOGY 1
+
+/* Force a star topology with only the coordinator transmitting an EB. */
+#define TSCH_CONF_STAR_TOPOLOGY 1
+
 /* IEEE802.15.4 PANID */
-#define IEEE802154_CONF_PANID 0x0353 // 3S
+
+///// START CHANGE PANID /////
+
+//#define IEEE802154_CONF_PANID 0x0353 //
 
 /* Do not start TSCH at init, wait for NETSTACK_MAC.on() */
 #define TSCH_CONF_AUTOSTART 1
@@ -85,7 +98,11 @@
 
 /* 6TiSCH minimal schedule length.
  * Larger values result in less frequent active slots: reduces capacity and saves energy. */
-#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 11
+#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 37
+
+
+///// START CHANGE SLOTFRAMELENGTH /////
+
 
 /* Set coordinator node */
 #define COORDINATOR_ID 58144
@@ -95,6 +112,10 @@
 
 /* Define channel hopping sequence */
 #define TSCH_CONF_DEFAULT_HOPPING_SEQUENCE TSCH_HOPPING_SEQUENCE_1_1_0
+
+
+///// START CHANGE MAX_FRAME_RETRIES /////
+
 
 /*******************************************************/
 /************* Other system configuration **************/
