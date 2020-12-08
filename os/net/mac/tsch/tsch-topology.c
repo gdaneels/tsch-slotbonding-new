@@ -27,8 +27,8 @@
 ///// START CHANGE PARENT /////
 
 
-static const linkaddr_t allowed_address = {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe3, 0x20}};
-//static const linkaddr_t allowed_address = {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe4, 0xb2}};
+//static const linkaddr_t allowed_address = {{0x00, 0x12, 0x4b, 0x00,  0x14, 0xd5, 0x2b, 0xab}};
+static const linkaddr_t allowed_address = {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}};
 
 
 typedef struct {
@@ -42,13 +42,16 @@ typedef struct {
 
 ///// START CHANGE TX /////
 
-
+//
 static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
-		{4, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY}
+		{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY}
 };
 
 //static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
-//		{8, 0, {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe4, 0xb2}}, v},
+//		{20, 0, {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY},
+//};
+//static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
+//		{30, 0, {{0x00, 0x12, 0x4b, 0x00,  0x14, 0xd5, 0x2b, 0xab}}, TSCH_SLOTBONDING_1000_KBPS_PHY},
 //};
 
 //static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {};
@@ -69,11 +72,15 @@ static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOC
 //
 //static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {
 //		{4, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_1000_KBPS_PHY}, {8, 0, {{0x00, 0x12, 0x4b, 0x00,  0x14, 0xd5, 0x2b, 0xab}}, TSCH_SLOTBONDING_50_KBPS_PHY},
-//};
+////};
 //static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {
-//		{4, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_50_KBPS_PHY},
+//		{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_50_KBPS_PHY}, {20, 0, {{0x00, 0x12, 0x4b, 0x00,  0x14, 0xd5, 0x2b, 0xab}}, TSCH_SLOTBONDING_50_KBPS_PHY},
 //};
-//
+
+//static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {
+//		{30, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe2, 0x22}}, TSCH_SLOTBONDING_1000_KBPS_PHY},
+//};
+
 static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {};
 
 int
@@ -101,7 +108,7 @@ tsch_install_tx_cells(void) {
 							   LINK_TYPE_NORMAL,
 							   &tx_allocations[i].addrtofrom,
 							   tx_allocations[i].timeslot_offset,
-							   tx_allocations[i].channel_offset,
+							   tx_allocations[i].channel_offset, 1,
 							   tx_allocations[i].phy);
 	}
 	return 1;
@@ -120,7 +127,7 @@ tsch_install_rx_cells(void) {
 							   LINK_TYPE_NORMAL,
 							   &rx_allocations[i].addrtofrom,
 							   rx_allocations[i].timeslot_offset,
-							   rx_allocations[i].channel_offset,
+							   rx_allocations[i].channel_offset, 1,
 							   rx_allocations[i].phy);
 	}
 	return 1;
