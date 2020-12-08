@@ -667,7 +667,7 @@ static int
 init(void)
 {
 
-  INFO("RF: Init (%s)\n", CC1200_RF_CFG.cfg_descriptor);
+  INFO("RF: Init (%s)\n", current_cc1200_rf_cfg->cfg_descriptor);
 
   if(!(rf_flags & RF_INITIALIZED)) {
 
@@ -689,11 +689,11 @@ init(void)
     tx_mode_value = (RADIO_TX_MODE_SEND_ON_CCA);
 
     /* Set output power */
-    new_txpower = CC1200_RF_CFG.max_txpower;
+    new_txpower = current_cc1200_rf_cfg->max_txpower;
     update_txpower(new_txpower);
 
     /* Adjust CAA threshold */
-    new_cca_threshold = CC1200_RF_CFG.cca_threshold;
+    new_cca_threshold = current_cc1200_rf_cfg->cca_threshold;
     update_cca_threshold(new_cca_threshold);
 
     process_start(&cc1200_process, NULL);
@@ -898,7 +898,7 @@ transmit(unsigned short transmit_len)
      */
 
     RTIMER_BUSYWAIT_UNTIL_STATE(STATE_RX,
-        CC1200_RF_CFG.tx_rx_turnaround);
+		current_cc1200_rf_cfg->tx_rx_turnaround);
 
     ENABLE_GPIO_INTERRUPTS();
 
@@ -960,7 +960,7 @@ read(void *buf, unsigned short buf_len)
 
   if(rx_pkt_len > 0) {
 
-    rssi = (int8_t)rx_pkt[rx_pkt_len - 2] + (int)CC1200_RF_CFG.rssi_offset;
+    rssi = (int8_t)rx_pkt[rx_pkt_len - 2] + (int)current_cc1200_rf_cfg->rssi_offset;
     /* CRC is already checked */
     uint8_t crc_lqi = rx_pkt[rx_pkt_len - 1];
 
@@ -1247,7 +1247,7 @@ get_rssi(void)
                 & CC1200_CARRIER_SENSE_VALID),
                 RTIMER_SECOND / 100);
   RF_ASSERT(rssi0 & CC1200_CARRIER_SENSE_VALID);
-  rssi1 = (int8_t)single_read(CC1200_RSSI1) + (int)CC1200_RF_CFG.rssi_offset;
+  rssi1 = (int8_t)single_read(CC1200_RSSI1) + (int)current_cc1200_rf_cfg->rssi_offset;
 
   /* If we were off, turn back off */
   if(was_off) {
@@ -1320,12 +1320,12 @@ get_value(radio_param_t param, radio_value_t *value)
 
   case RADIO_CONST_CHANNEL_MIN:
 
-    *value = (radio_value_t)CC1200_RF_CFG.min_channel;
+    *value = (radio_value_t)current_cc1200_rf_cfg->min_channel;
     return RADIO_RESULT_OK;
 
   case RADIO_CONST_CHANNEL_MAX:
 
-    *value = (radio_value_t)CC1200_RF_CFG.max_channel;
+    *value = (radio_value_t)current_cc1200_rf_cfg->max_channel;
     return RADIO_RESULT_OK;
 
   case RADIO_CONST_TXPOWER_MIN:
@@ -1335,7 +1335,7 @@ get_value(radio_param_t param, radio_value_t *value)
 
   case RADIO_CONST_TXPOWER_MAX:
 
-    *value = (radio_value_t)CC1200_RF_CFG.max_txpower;
+    *value = (radio_value_t)current_cc1200_rf_cfg->max_txpower;
     return RADIO_RESULT_OK;
 
   case RADIO_CONST_PHY_OVERHEAD:
@@ -1351,19 +1351,19 @@ get_value(radio_param_t param, radio_value_t *value)
     return RADIO_RESULT_OK;
 
   case RADIO_CONST_BYTE_AIR_TIME:
-      *value = (radio_value_t)8*1000*1000 / CC1200_RF_CFG.bitrate;
+      *value = (radio_value_t)8*1000*1000 / current_cc1200_rf_cfg->bitrate;
       return RADIO_RESULT_OK;
 
   case RADIO_CONST_DELAY_BEFORE_TX:
-    *value = (radio_value_t)CC1200_RF_CFG.delay_before_tx;
+    *value = (radio_value_t)current_cc1200_rf_cfg->delay_before_tx;
     return RADIO_RESULT_OK;
 
   case RADIO_CONST_DELAY_BEFORE_RX:
-      *value = (radio_value_t)CC1200_RF_CFG.delay_before_rx;
+      *value = (radio_value_t)current_cc1200_rf_cfg->delay_before_rx;
       return RADIO_RESULT_OK;
 
   case RADIO_CONST_DELAY_BEFORE_DETECT:
-      *value = (radio_value_t)CC1200_RF_CFG.delay_before_detect;
+      *value = (radio_value_t)current_cc1200_rf_cfg->delay_before_detect;
       return RADIO_RESULT_OK;
 
   case RADIO_CONST_MAX_PAYLOAD_LEN:
@@ -1431,8 +1431,8 @@ set_value(radio_param_t param, radio_value_t value)
 
   case RADIO_PARAM_TXPOWER:
 
-    if(value > (radio_value_t)CC1200_RF_CFG.max_txpower) {
-      value = (radio_value_t)CC1200_RF_CFG.max_txpower;
+    if(value > (radio_value_t)current_cc1200_rf_cfg->max_txpower) {
+      value = (radio_value_t)current_cc1200_rf_cfg->max_txpower;
     }
 
     if(value < (radio_value_t)CC1200_CONST_TX_POWER_MIN) {
@@ -1486,7 +1486,7 @@ get_object(radio_param_t param, void *dest, size_t size)
       return RADIO_RESULT_INVALID_VALUE;
     }
     /* Assigned value: a pointer to the TSCH timing in usec */
-    *(const uint16_t **)dest = CC1200_RF_CFG.tsch_timing;
+    *(const uint16_t **)dest = current_cc1200_rf_cfg->tsch_timing;
     return RADIO_RESULT_OK;
   }
 #endif /* MAC_CONF_WITH_TSCH */
@@ -1653,8 +1653,8 @@ configure(void)
   reset();
 
   /* Write the configuration as exported from SmartRF Studio */
-  write_reg_settings(CC1200_RF_CFG.register_settings,
-                     CC1200_RF_CFG.size_of_register_settings);
+  write_reg_settings(current_cc1200_rf_cfg->register_settings,
+					 current_cc1200_rf_cfg->size_of_register_settings);
 
   /* Write frequency offset */
 #if CC1200_FREQ_OFFSET
@@ -1665,7 +1665,7 @@ configure(void)
 #endif
 
   /* RSSI offset */
-  single_write(CC1200_AGC_GAIN_ADJUST, (int8_t)CC1200_RF_CFG.rssi_offset);
+  single_write(CC1200_AGC_GAIN_ADJUST, (int8_t)current_cc1200_rf_cfg->rssi_offset);
 
   /***************************************************************************
    * RF test modes needed during hardware development
@@ -1678,7 +1678,7 @@ configure(void)
   single_write(CC1200_TXLAST, 0xFF);
   update_txpower(CC1200_CONST_TX_POWER_MAX);
   single_write(CC1200_PKT_CFG2, 0x02);
-  freq = calculate_freq(CC1200_DEFAULT_CHANNEL - CC1200_RF_CFG.min_channel);
+  freq = calculate_freq(CC1200_DEFAULT_CHANNEL - current_cc1200_rf_cfg->min_channel);
   single_write(CC1200_FREQ0, ((uint8_t *)&freq)[0]);
   single_write(CC1200_FREQ1, ((uint8_t *)&freq)[1]);
   single_write(CC1200_FREQ2, ((uint8_t *)&freq)[2]);
@@ -1740,8 +1740,8 @@ configure(void)
   single_write(CC1200_IOCFG3, CC1200_IOCFG_CARRIER_SENSE);
   single_write(CC1200_IOCFG2, CC1200_IOCFG_SERIAL_CLK);
   single_write(CC1200_IOCFG0, CC1200_IOCFG_SERIAL_RX);
-  update_cca_threshold(CC1200_RF_CFG.cca_threshold);
-  freq = calculate_freq(CC1200_DEFAULT_CHANNEL - CC1200_RF_CFG.min_channel);
+  update_cca_threshold(current_cc1200_rf_cfg->cca_threshold);
+  freq = calculate_freq(CC1200_DEFAULT_CHANNEL - current_cc1200_rf_cfg->min_channel);
   single_write(CC1200_FREQ0, ((uint8_t *)&freq)[0]);
   single_write(CC1200_FREQ1, ((uint8_t *)&freq)[1]);
   single_write(CC1200_FREQ2, ((uint8_t *)&freq)[2]);
@@ -2060,10 +2060,10 @@ idle_tx_rx(const uint8_t *payload, uint16_t payload_len)
         burst_write(CC1200_TXFIFO, p, to_write);
         bytes_left_to_write -= to_write;
         p += to_write;
-        t0 += CC1200_RF_CFG.tx_pkt_lifetime;
+        t0 += current_cc1200_rf_cfg->tx_pkt_lifetime;
       }
     } while((cc1200_arch_gpio0_read_pin() == 1) &&
-            RTIMER_CLOCK_LT(RTIMER_NOW(), t0 + CC1200_RF_CFG.tx_pkt_lifetime));
+            RTIMER_CLOCK_LT(RTIMER_NOW(), t0 + current_cc1200_rf_cfg->tx_pkt_lifetime));
 
     /*
      * At this point we either left TX or a timeout occurred. If all went
@@ -2096,12 +2096,12 @@ idle_tx_rx(const uint8_t *payload, uint16_t payload_len)
   } else {
     /* Wait for TX to complete */
     RTIMER_BUSYWAIT_UNTIL((cc1200_arch_gpio0_read_pin() == 0),
-                   CC1200_RF_CFG.tx_pkt_lifetime);
+						  current_cc1200_rf_cfg->tx_pkt_lifetime);
   }
 #else
   /* Wait for TX to complete */
   RTIMER_BUSYWAIT_UNTIL((cc1200_arch_gpio0_read_pin() == 0),
-                 CC1200_RF_CFG.tx_pkt_lifetime);
+                 current_cc1200_rf_cfg->tx_pkt_lifetime);
 #endif
 
   if(cc1200_arch_gpio0_read_pin() == 1) {
@@ -2169,7 +2169,7 @@ calculate_freq(uint8_t channel)
 
   uint32_t freq;
 
-  freq = CC1200_RF_CFG.chan_center_freq0 + (channel * CC1200_RF_CFG.chan_spacing) / 1000 /* /1000 because chan_spacing is in Hz */;
+  freq = current_cc1200_rf_cfg->chan_center_freq0 + (channel * current_cc1200_rf_cfg->chan_spacing) / 1000 /* /1000 because chan_spacing is in Hz */;
   freq *= FREQ_MULTIPLIER;
   freq /= FREQ_DIVIDER;
 
@@ -2185,8 +2185,8 @@ set_channel(uint8_t channel)
   uint8_t was_off = 0;
   uint32_t freq;
 
-  channel %= (CC1200_RF_CFG.max_channel - CC1200_RF_CFG.min_channel + 1);
-  channel += CC1200_RF_CFG.min_channel;
+  channel %= (current_cc1200_rf_cfg->max_channel - current_cc1200_rf_cfg->min_channel + 1);
+  channel += current_cc1200_rf_cfg->min_channel;
 
 #if 0
   /*
@@ -2198,8 +2198,8 @@ set_channel(uint8_t channel)
   }
 #endif
 
-  if(channel < CC1200_RF_CFG.min_channel ||
-     channel > CC1200_RF_CFG.max_channel) {
+  if(channel < current_cc1200_rf_cfg->min_channel ||
+     channel > current_cc1200_rf_cfg->max_channel) {
     /* Invalid channel */
     return CHANNEL_OUT_OF_LIMITS;
   }
@@ -2229,7 +2229,7 @@ set_channel(uint8_t channel)
 
   idle();
 
-  freq = calculate_freq(channel - CC1200_RF_CFG.min_channel);
+  freq = calculate_freq(channel - current_cc1200_rf_cfg->min_channel);
   single_write(CC1200_FREQ0, ((uint8_t *)&freq)[0]);
   single_write(CC1200_FREQ1, ((uint8_t *)&freq)[1]);
   single_write(CC1200_FREQ2, ((uint8_t *)&freq)[2]);
