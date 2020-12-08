@@ -57,6 +57,10 @@
 #define LOG_MODULE "TSCH Pkt"
 #define LOG_LEVEL LOG_LEVEL_MAC
 
+#if TSCH_FORCE_TOPOLOGY
+#include "net/mac/tsch/tsch-topology.h"
+#endif
+
 /*
  * We use a local packetbuf_attr array to collect necessary frame settings to
  * create an EACK because EACK is generated in the interrupt context where
@@ -399,6 +403,13 @@ tsch_packet_parse_eb(const uint8_t *buf, int buf_size,
     LOG_ERR("! parse_eb: failed to parse frame\n");
     return 0;
   }
+
+#if TSCH_FORCE_TOPOLOGY
+  if (!tsch_allowed_eb((const linkaddr_t *) &frame->src_addr)) {
+		LOG_INFO("! received eb from wrong node\n");
+		return 0;
+	}
+#endif
 
   if(frame->fcf.frame_version < FRAME802154_IEEE802154_2015
      || frame->fcf.frame_type != FRAME802154_BEACONFRAME) {
