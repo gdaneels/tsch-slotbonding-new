@@ -67,7 +67,17 @@
 /* 1 channel, sequence length 1 */
 #define TSCH_HOPPING_SEQUENCE_1_1 (uint8_t[]){ 20 }
 
-#define TSCH_HOPPING_SEQUENCE_1_1_0 (uint8_t[]){ 21 }
+#if TSCH_SLOTBONDING
+// obtained with https://gist.github.com/twatteyne/2e22ee3c1a802b685695
+// 1 channel for fast joining
+#define TSCH_HOPPING_SEQUENCE_1_1_sb (uint8_t[]){ 0 }
+// 3 channels for 50 kbps PHY
+#define TSCH_HOPPING_SEQUENCE_3_3_sb (uint8_t[]){ 0, 2, 1 }
+// 2 channels for 1000 kbps PHY
+#define TSCH_HOPPING_SEQUENCE_2_2_sb (uint8_t[]){ 0, 1 }
+// 3 channels, sequence length 4
+#define TSCH_HOPPING_SEQUENCE_3_8_sb (uint8_t[]) { 1, 0, 1, 0, 1, 0, 2, 2 }
+#endif
 
 /* Max TSCH packet length equal to the length of the packet buffer */
 #define TSCH_PACKET_MAX_LEN PACKETBUF_SIZE
