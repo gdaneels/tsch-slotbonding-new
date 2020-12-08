@@ -412,13 +412,13 @@ tsch_get_network_uptime_ticks(void)
   status = critical_enter();
 
   uptime_asn = last_sync_asn.ls4b + ((uint64_t)last_sync_asn.ms1b << 32);
-//#if TSCH_SLOTBONDING
-//	/* first calculate the at the uptime at the last sync in rtimer ticks */
-//  uptime_ticks = uptime_asn * tsch_sb_default_timing[tsch_ts_timeslot_length];
-//#else
+#if TSCH_SLOTBONDING
+	/* first calculate the at the uptime at the last sync in rtimer ticks */
+  uptime_ticks = uptime_asn * tsch_sb_default_timing[tsch_ts_timeslot_length];
+#else
   /* first calculate the at the uptime at the last sync in rtimer ticks */
   uptime_ticks = uptime_asn * tsch_timing[tsch_ts_timeslot_length];
-//#endif
+#endif
   /* then convert to clock ticks (assume that CLOCK_SECOND divides RTIMER_ARCH_SECOND) */
   uptime_ticks /= (RTIMER_ARCH_SECOND / CLOCK_SECOND);
   /* then add the ticks passed since the last timesync */
@@ -516,6 +516,7 @@ update_timing_delay()
 static void
 reconfigure(void const *new_phy)
 {
+
     if(!NETSTACK_RADIO.reconfigure(new_phy)){
         TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"Reconfiguration failed"));
     }
@@ -1200,15 +1201,15 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
       tsch_last_sync_time = clock_time();
     }
 
-//#if TSCH_SLOTBONDING
-//	  /* Do we need to resynchronize? i.e., wait for EB again */
-//    if(!tsch_is_coordinator && (TSCH_ASN_DIFF(tsch_current_asn, last_sync_asn) >
-//        (100 * TSCH_CLOCK_TO_SLOTS(TSCH_DESYNC_THRESHOLD / 100, tsch_sb_default_timing[tsch_ts_timeslot_length])))) {
-//#else
+#if TSCH_SLOTBONDING
+	  /* Do we need to resynchronize? i.e., wait for EB again */
+    if(!tsch_is_coordinator && (TSCH_ASN_DIFF(tsch_current_asn, last_sync_asn) >
+        (100 * TSCH_CLOCK_TO_SLOTS(TSCH_DESYNC_THRESHOLD / 100, tsch_sb_default_timing[tsch_ts_timeslot_length])))) {
+#else
     /* Do we need to resynchronize? i.e., wait for EB again */
     if(!tsch_is_coordinator && (TSCH_ASN_DIFF(tsch_current_asn, last_sync_asn) >
         (100 * TSCH_CLOCK_TO_SLOTS(TSCH_DESYNC_THRESHOLD / 100, tsch_timing[tsch_ts_timeslot_length])))) {
-//#endif
+#endif
       TSCH_LOG_ADD(tsch_log_message,
             snprintf(log->message, sizeof(log->message),
                 "! leaving the network, last sync %u",
@@ -1249,14 +1250,14 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
 
         /* Update ASN */
         TSCH_ASN_INC(tsch_current_asn, timeslot_diff);
-//#if TSCH_SLOTBONDING
-//		  /* Time to next wake up */
-//      /* Use the slotbonding default slot size */
-//        time_to_next_active_slot = timeslot_diff * tsch_sb_default_timing[tsch_ts_timeslot_length] + drift_correction;
-//#else
+#if TSCH_SLOTBONDING
+		  /* Time to next wake up */
+      /* Use the slotbonding default slot size */
+        time_to_next_active_slot = timeslot_diff * tsch_sb_default_timing[tsch_ts_timeslot_length] + drift_correction;
+#else
 		  /* Time to next wake up */
         time_to_next_active_slot = timeslot_diff * tsch_timing[tsch_ts_timeslot_length] + drift_correction;
-//#endif
+#endif
         time_to_next_active_slot += tsch_timesync_adaptive_compensate(time_to_next_active_slot);
         drift_correction = 0;
         is_drift_correction_used = 0;
@@ -1293,14 +1294,14 @@ tsch_slot_operation_start(void)
     }
     /* Update ASN */
     TSCH_ASN_INC(tsch_current_asn, timeslot_diff);
-//#if TSCH_SLOTBONDING
-//	  /* Time to next wake up */
-//      /* Use the slotbonding default slot size */
-//      time_to_next_active_slot = timeslot_diff * tsch_sb_default_timing[tsch_ts_timeslot_length];
-//#else
+#if TSCH_SLOTBONDING
+	  /* Time to next wake up */
+      /* Use the slotbonding default slot size */
+      time_to_next_active_slot = timeslot_diff * tsch_sb_default_timing[tsch_ts_timeslot_length];
+#else
     /* Time to next wake up */
     time_to_next_active_slot = timeslot_diff * tsch_timing[tsch_ts_timeslot_length];
-//#endif
+#endif
     /* Compensate for the base drift */
     time_to_next_active_slot += tsch_timesync_adaptive_compensate(time_to_next_active_slot);
     /* Update current slot start */
