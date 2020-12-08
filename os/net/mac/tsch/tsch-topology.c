@@ -15,20 +15,20 @@
 ///// START CHANGE NUMTX /////
 
 
-#define TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS 1
+//#define TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS 1
 
 
 ///// START CHANGE NUMRX /////
 
 
-#define TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS 0
+//#define TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS 0
 
 
 ///// START CHANGE PARENT /////
 
 
 //static const linkaddr_t allowed_address = {{0x00, 0x12, 0x4b, 0x00,  0x14, 0xd5, 0x2b, 0xab}};
-static const linkaddr_t allowed_address = {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}};
+//static const linkaddr_t allowed_address = {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}};
 
 
 typedef struct {
@@ -42,10 +42,12 @@ typedef struct {
 
 ///// START CHANGE TX /////
 
+
+
 //
-static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
-		{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY}
-};
+//static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
+//		{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_1000_KBPS_PHY}
+//};
 
 //static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
 //		{20, 0, {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY},
@@ -78,10 +80,10 @@ static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOC
 //};
 
 //static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {
-//		{30, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe2, 0x22}}, TSCH_SLOTBONDING_1000_KBPS_PHY},
+//		{10, 0, {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_1000_KBPS_PHY},
 //};
 
-static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {};
+//static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {};
 
 int
 tsch_allowed_eb(const linkaddr_t *src_addr) {
