@@ -60,7 +60,7 @@ cd ~
 # make PORT=/dev/ttyUSB0 serialview >> ${OUTPUT_FILE}
 timeout ${RUNTIME}s python3 read_serial.py ${OUTPUT_FILE} 1>>${LOG_FILE} 2>>${ERROR_FILE}
 
-NFS=/groups/ilabt-imec-be/tsch-slotbonding-new/exp/${EXPERIMENT_NAME}/datastore/${HOSTNAME%%.*}/${ITERATION}
+NFS=/groups/ilabt-imec-be/tsch-slotbonding/exp/${EXPERIMENT_NAME}/datastore/${HOSTNAME%%.*}/${ITERATION}
 mkdir -p ${NFS}
 cp ${LOG_FILE} ${NFS}
 rm ${LOG_FILE}
