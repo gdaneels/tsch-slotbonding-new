@@ -821,8 +821,14 @@ PT_THREAD(cmd_tsch_schedule(struct pt *pt, shell_output_func output, char *args)
       SHELL_OUTPUT(output, "-- Slotframe: handle %u, size %u, links:\n", sf->handle, sf->size.val);
 
       while(l != NULL) {
-        SHELL_OUTPUT(output, "---- Options %02x, type %u, timeslot %u, channel offset %u, address ",
-               l->link_options, l->link_type, l->timeslot, l->channel_offset);
+        SHELL_OUTPUT(output, "---- Options %02x, type %u, timeslot %u, channel offset %u, phy %u address ",
+               l->link_options, l->link_type, l->timeslot, l->channel_offset
+               #if TSCH_SLOTBONDING
+               , l->current_phy
+               #else
+               , 999
+               #endif
+               );
         shell_output_lladdr(output, &l->addr);
         SHELL_OUTPUT(output, "\n");
         l = list_item_next(l);
