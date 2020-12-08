@@ -77,12 +77,12 @@
  * */
 #define TSCH_TIMESYNC_MEASUREMENT_ERROR US_TO_RTIMERTICKS(32)
 
-//#if TSCH_SLOTBONDING
-//#define TSCH_SLOTS_PER_SECOND (1000000 / tsch_sb_default_timing_us[tsch_ts_timeslot_length])
-//#else
+#if TSCH_SLOTBONDING
+#define TSCH_SLOTS_PER_SECOND (1000000 / tsch_sb_default_timing_us[tsch_ts_timeslot_length])
+#else
 /* The approximate number of slots per second */
 #define TSCH_SLOTS_PER_SECOND (1000000 / tsch_timing_us[tsch_ts_timeslot_length])
-//#endif
+#endif
 
 /* Calculate packet tx/rx duration in rtimer ticks based on packet length in bytes. */
 #define TSCH_PACKET_DURATION(len) US_TO_RTIMERTICKS(RADIO_BYTE_AIR_TIME * ((len) + RADIO_PHY_OVERHEAD))
