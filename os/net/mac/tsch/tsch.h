@@ -180,12 +180,17 @@ extern int32_t max_drift_seen;
 /* The TSCH standard 10ms timeslot timing */
 extern const tsch_timeslot_timing_usec tsch_timeslot_timing_us_10000;
 
-//#if TSCH_SLOTBONDING
-///* TSCH default timeslot timing (in micro-second) */
-//extern tsch_timeslot_timing_usec tsch_sb_default_timing_us;
-///* TSCH default timeslot timing (in rtimer ticks) */
-//extern tsch_timeslot_timing_ticks tsch_sb_default_timing;
-//#endif
+#if TSCH_SLOTBONDING
+/* TSCH default timeslot timing (in micro-second) */
+extern tsch_timeslot_timing_usec tsch_sb_default_timing_us;
+/* TSCH default timeslot timing (in rtimer ticks) */
+extern tsch_timeslot_timing_ticks tsch_sb_default_timing;
+#endif
+
+#if TSCH_FORCE_TOPOLOGY
+extern int tsch_install_tx_cells();
+extern int tsch_install_rx_cells();
+#endif
 
 /* TSCH processes */
 PROCESS_NAME(tsch_process);

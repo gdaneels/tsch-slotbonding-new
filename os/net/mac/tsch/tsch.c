@@ -64,6 +64,10 @@
 #include "net/mac/tsch/sixtop/sixtop.h"
 #endif
 
+#if TSCH_FORCE_TOPOLOGY
+#include "net/mac/tsch/tsch-topology.h"
+#endif
+
 #if FRAME802154_VERSION < FRAME802154_IEEE802154_2015
 #error TSCH: FRAME802154_VERSION must be at least FRAME802154_IEEE802154_2015
 #endif
@@ -213,6 +217,7 @@ void tsch_update_timing(uint16_t *new_tsch_timing){
     tsch_timing_us[i] = new_tsch_timing[i];
     tsch_timing[i] = US_TO_RTIMERTICKS(tsch_timing_us[i]);
   }
+//	TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"%d",(int)tsch_timing_us[tsch_ts_timeslot_length]));
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -240,12 +245,12 @@ tsch_reset(void)
     tsch_timing_us[i] = tsch_default_timing_us[i];
     tsch_timing[i] = US_TO_RTIMERTICKS(tsch_timing_us[i]);
   }
-//#ifdef TSCH_SLOTBONDING
-//  for(i = 0; i < tsch_ts_elements_count; i++) {
-//		tsch_sb_default_timing_us[i] = TSCH_SLOTBONDING_DEFAULT_TIMINGS_US[i];
-//		tsch_sb_default_timing[i] = US_TO_RTIMERTICKS(tsch_sb_default_timing_us[i]);
-//	}
-//#endif
+#ifdef TSCH_SLOTBONDING
+  for(i = 0; i < tsch_ts_elements_count; i++) {
+		tsch_sb_default_timing_us[i] = TSCH_SLOTBONDING_DEFAULT_TIMINGS_US[i];
+		tsch_sb_default_timing[i] = US_TO_RTIMERTICKS(tsch_sb_default_timing_us[i]);
+	}
+#endif
 #ifdef TSCH_CALLBACK_LEAVING_NETWORK
   TSCH_CALLBACK_LEAVING_NETWORK();
 #endif
@@ -581,6 +586,13 @@ tsch_start_coordinator(void)
   TSCH_ASN_DIVISOR_INIT(tsch_hopping_sequence_length, sizeof(TSCH_DEFAULT_HOPPING_SEQUENCE));
 #if TSCH_SCHEDULE_WITH_6TISCH_MINIMAL
   tsch_schedule_create_minimal();
+	#if TSCH_FORCE_TOPOLOGY
+	if(tsch_install_rx_cells()) {
+   LOG_INFO("Installed RX cells.\n");
+  } else {
+   LOG_INFO("Failed to install RX cells.\n");
+  }
+#endif
 #endif
 
   tsch_is_associated = 1;
@@ -701,6 +713,18 @@ tsch_associate(const struct input_packet *input_eb, rtimer_clock_t timestamp)
 #if TSCH_SCHEDULE_WITH_6TISCH_MINIMAL
     LOG_INFO("parse_eb: no schedule, setting up minimal schedule\n");
     tsch_schedule_create_minimal();
+    #if TSCH_FORCE_TOPOLOGY
+		if (tsch_install_tx_cells()) {
+    LOG_INFO("Installed TX cells.\n");
+  } else {
+    LOG_INFO("Failed to install TX cells.\n");
+  }
+  if (tsch_install_rx_cells()){
+    LOG_INFO("Installed RX cells.\n");
+  } else {
+    LOG_INFO("Failed to install RX cells.\n");
+  }
+#endif
 #else
     LOG_INFO("parse_eb: no schedule\n");
 #endif
@@ -745,12 +769,12 @@ tsch_associate(const struct input_packet *input_eb, rtimer_clock_t timestamp)
       frame802154_set_pan_id(frame.src_pid);
 
       /* Synchronize on EB */
-//#if TSCH_SLOTBONDING
-//      // here you have to use the timings of the associate PHY
-//		tsch_slot_operation_sync(timestamp - US_TO_RTIMERTICKS(TSCH_SLOTBONDING_ASSOCIATE.tsch_timing[tsch_ts_tx_offset]), &tsch_current_asn);
-//#else
+#if TSCH_SLOTBONDING
+      // here you have to use the timings of the associate PHY
+		tsch_slot_operation_sync(timestamp - US_TO_RTIMERTICKS(TSCH_SLOTBONDING_ASSOCIATE.tsch_timing[tsch_ts_tx_offset]), &tsch_current_asn);
+#else
       tsch_slot_operation_sync(timestamp - tsch_timing[tsch_ts_tx_offset], &tsch_current_asn);
-//#endif
+#endif
 
       /* Update global flags */
       tsch_is_associated = 1;
@@ -936,7 +960,12 @@ PROCESS_THREAD(tsch_send_eb_process, ev, data)
     PROCESS_WAIT_UNTIL(etimer_expired(&eb_timer));
   }
 
-  while(1) {
+#if TSCH_STAR_TOPOLOGY
+		while(tsch_is_coordinator) {
+#else
+  		while(1) {
+#endif
+
     unsigned long delay;
 
     if(!tsch_is_associated) {
@@ -1015,6 +1044,17 @@ tsch_init(void)
   radio_value_t radio_max_payload_len;
 
   rtimer_clock_t t;
+
+#if TSCH_SLOTBONDING
+  // this statement should be called before the reset() so the TSCH_DEFAULT_TIMING_US is set correctly to the 1000 kbps PHY
+    // this will be necessary for when joining the network in tsch_associate where an entry of tsch_timing will be used
+    // if this is not called, this entry of tsch_timing will be the wrong one (50 kbps PHY)
+     const char * desc = TSCH_SLOTBONDING_ASSOCIATE.cfg_descriptor;
+    LOG_INFO("Before init'ing TSCH, reconfigure to ");
+    LOG_INFO_(desc);
+    LOG_INFO_(".\n");
+    NETSTACK_RADIO.reconfigure(&TSCH_SLOTBONDING_ASSOCIATE);
+#endif
 
   /* Check that the platform provides a TSCH timeslot timing template */
   if(TSCH_DEFAULT_TIMESLOT_TIMING == NULL) {
