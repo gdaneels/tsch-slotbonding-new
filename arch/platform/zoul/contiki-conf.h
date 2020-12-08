@@ -129,6 +129,7 @@ uint16_t *radio_tsch_timeslot_timing(void);
 #ifndef CC1200_CONF_RF_CFG
 //#define CC1200_CONF_RF_CFG                   cc1200_868_4gfsk_1000kbps
 #define CC1200_CONF_RF_CFG                   cc1200_802154g_863_870_fsk_50kbps
+//#define CC1200_CONF_RF_CFG                   cc1200_mulphy_863_870_2GFSK_50kbps_sb
 #endif
 #endif
 
