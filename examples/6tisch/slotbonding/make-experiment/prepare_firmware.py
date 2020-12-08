@@ -82,7 +82,7 @@ def replace(filename, search_text, replace_with):
                 print(line, end="")
 
 def make_coordinator(node_id=None):
-    path_to_node_file = "../../../../examples/6tisch/multi-phy-slotbonding/node.c"
+    path_to_node_file = "../../../../examples/6tisch/slotbonding/node.c"
     if node_id is None:
         raise Exception('Node ID is None in make_coordinator of prepare_firmware!')
     statement = "static linkaddr_t coordinator_addr = {0};".format(get_addr(data['coordinator']))
@@ -91,7 +91,7 @@ def make_coordinator(node_id=None):
     replace(path_to_node_file, "///// START CHANGE COORDINATOR /////", statement)
 
 def make_destaddr(node_id=None):
-    path_to_node_file = "../../../../examples/6tisch/multi-phy-slotbonding/node.c"
+    path_to_node_file = "../../../../examples/6tisch/slotbonding/node.c"
     if node_id is None:
         raise Exception('Node ID is None in make_destaddr of prepare_firmware!')
     statement = None
@@ -102,17 +102,17 @@ def make_destaddr(node_id=None):
     replace(path_to_node_file, "///// START CHANGE DESTADDR /////", statement)
 
 def make_frameretries():
-    path_to_node_file = "../../../../examples/6tisch/multi-phy-slotbonding/project-conf.h"
+    path_to_node_file = "../../../../examples/6tisch/slotbonding/project-conf.h"
     statement = "#define TSCH_CONF_MAC_MAX_FRAME_RETRIES {0}".format(data['r_max'])
     replace(path_to_node_file, "///// START CHANGE MAX_FRAME_RETRIES /////", statement)
 
 def make_slotframelength():
-    path_to_node_file = "../../../../examples/6tisch/multi-phy-slotbonding/project-conf.h"
+    path_to_node_file = "../../../../examples/6tisch/slotbonding/project-conf.h"
     statement = "#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH {0}".format(data['slotframe_size'])
     replace(path_to_node_file, "///// START CHANGE SLOTFRAMELENGTH /////", statement)
 
 def make_panid():
-    path_to_node_file = "../../../../examples/6tisch/multi-phy-slotbonding/project-conf.h"
+    path_to_node_file = "../../../../examples/6tisch/slotbonding/project-conf.h"
     statement = "#define IEEE802154_CONF_PANID {0}".format(data['pan_id'])
     replace(path_to_node_file, "///// START CHANGE PANID /////", statement)
 
