@@ -1137,15 +1137,12 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
 
 #if TSCH_SLOTBONDING
 		if (current_link->current_phy == TSCH_SLOTBONDING_50_KBPS_PHY) {
-//  			TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message), "Reconfigure to 50 kbps PHY. \n"));
 			reconfigure(tsch_default_radio_conf);
 		} else if (current_link->current_phy == TSCH_SLOTBONDING_1000_KBPS_PHY) {
-//  			TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message), "Reconfigure to 1000 kbps PHY. \n"));
 	        reconfigure(tsch_radio_conf_0); // reconfigure radio
 		} else {
 	        TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message), "Else reconfigure... \n"));
 	        reconfigure(tsch_radio_conf_0);
-//	        exit();
 	    }
 #endif // TSCH_SLOTBONDING
 
