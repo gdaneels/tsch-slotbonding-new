@@ -1,0 +1,330 @@
+{
+    "coordinator": "11",
+    "pan_id": "0x000b",
+    "iteration": "11",
+    "r_max": 3,
+    "slotframe_size": 79,
+    "packet_generation": "1",
+    "hostnames": {
+        "10": {
+            "hostname": "nuc9-3",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x47, 0xed}}"
+        },
+        "17": {
+            "hostname": "nuc9-5",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x56, 0x46}}"
+        },
+        "18": {
+            "hostname": "nuc9-6",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x56, 0x22}}"
+        },
+        "8": {
+            "hostname": "nuc9-14",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x56, 0x4c}}"
+        },
+        "3": {
+            "hostname": "nuc9-33",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x54, 0x2d}}"
+        },
+        "4": {
+            "hostname": "nuc9-34",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x47, 0xf6}}"
+        },
+        "7": {
+            "hostname": "nuc9-35",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x56, 0x57}}"
+        },
+        "6": {
+            "hostname": "nuc9-37",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x54, 0x63}}"
+        },
+        "14": {
+            "hostname": "nuc10-1",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x56, 0x73}}"
+        },
+        "13": {
+            "hostname": "nuc10-5",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x56, 0x18}}"
+        },
+        "5": {
+            "hostname": "nuc10-18",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x56, 0x6c}}"
+        },
+        "11": {
+            "hostname": "nuc10-20",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x54, 0x52}}"
+        },
+        "2": {
+            "hostname": "nuc10-33",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x4c, 0xdd}}"
+        },
+        "0": {
+            "hostname": "nuc10-34",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x54, 0x1f}}"
+        },
+        "1": {
+            "hostname": "nuc10-35",
+            "addr": "{{0x00, 0x12, 0x4b, 0x00, 0x10, 0x03, 0x4c, 0xa9}}"
+        }
+    },
+    "schedule": {
+        "11": {
+            "tx": [],
+            "rx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "10",
+                    "ts": 4,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "17",
+                    "ts": 8,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "18",
+                    "ts": 12,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "8",
+                    "ts": 16,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "3",
+                    "ts": 20,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "4",
+                    "ts": 28,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "7",
+                    "ts": 32,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "6",
+                    "ts": 36,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "14",
+                    "ts": 40,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "13",
+                    "ts": 44,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "5",
+                    "ts": 52,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "2",
+                    "ts": 56,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "0",
+                    "ts": 60,
+                    "ch": 0
+                },
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "1",
+                    "ts": 64,
+                    "ch": 0
+                }
+            ],
+            "parent": null
+        },
+        "10": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 4,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "17": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 8,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "18": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 12,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "8": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 16,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "3": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 20,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "4": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 28,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "7": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 32,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "6": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 36,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "14": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 40,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "13": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 44,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "5": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 52,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "2": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 56,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "0": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 60,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        },
+        "1": {
+            "rx": [],
+            "tx": [
+                {
+                    "phy": "TSCH_SLOTBONDING_50_KBPS_PHY",
+                    "addr": "11",
+                    "ts": 64,
+                    "ch": 0
+                }
+            ],
+            "parent": "11"
+        }
+    }
+}

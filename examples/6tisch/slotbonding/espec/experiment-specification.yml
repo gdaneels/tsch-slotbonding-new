@@ -1,0 +1,8 @@
+version: 1.0-basic
+rspec: nodes.rspec
+upload: 
+  - experiments.tar.gz
+  - install.sh
+  - run-experiment.sh
+  - read_serial.py
+execute: install.sh

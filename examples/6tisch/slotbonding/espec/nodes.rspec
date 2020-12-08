@@ -1,0 +1,63 @@
+<?xml version='1.0'?>
+<rspec xmlns="http://www.geni.net/resources/rspec/3" type="request"                 generated_by="jFed RSpec Editor" generated="2018-03-28T12:26:49.505+02:00"  xmlns:emulab="http://www.protogeni.net/resources/rspec/ext/emulab/1"                xmlns:delay="http://www.protogeni.net/resources/rspec/ext/delay/1" xmlns:jfed-command="http://jfed.iminds.be/rspec/ext/jfed-command/1"  xmlns:client="http://www.protogeni.net/resources/rspec/ext/client/1"                xmlns:jfed-ssh-keys="http://jfed.iminds.be/rspec/ext/jfed-ssh-keys/1" xmlns:jfed="http://jfed.iminds.be/rspec/ext/jfed/1"  xmlns:sharedvlan="http://www.protogeni.net/resources/rspec/ext/shared-vlan/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/request.xsd ">
+
+<node client_id="nuc9-3" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-3">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="945" y="400"/>
+</node>
+<node client_id="nuc9-5" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-5">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1425" y="400"/>
+</node>
+<node client_id="nuc9-6" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-6">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1665" y="400"/>
+</node>
+<node client_id="nuc9-14" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-14">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="465" y="185"/>
+</node>
+<node client_id="nuc9-33" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-33">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="140" y="695"/>
+</node>
+<node client_id="nuc9-34" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-34">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="140" y="560"/>
+</node>
+<node client_id="nuc9-35" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-35">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="140" y="365"/>
+</node>
+<node client_id="nuc9-37" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-37">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="577.5" y="637.5"/>
+</node>
+<node client_id="nuc10-1" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc10-1">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="465" y="400"/>
+</node>
+<node client_id="nuc10-5" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc10-5">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1425" y="400"/>
+</node>
+<node client_id="nuc10-18" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc10-18">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1440" y="185"/>
+</node>
+<node client_id="nuc10-20" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc10-20">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1962.5" y="500"/>
+</node>
+<node client_id="nuc10-33" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc10-33">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="140" y="695"/>
+</node>
+<node client_id="nuc10-34" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc10-34">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="140" y="560"/>
+</node>
+<node client_id="nuc10-35" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc10-35">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="140" y="365"/>
+</node></rspec>
