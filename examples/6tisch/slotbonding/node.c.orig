@@ -59,9 +59,9 @@
 
 /* Configuration */
 #define SEND_INTERVAL (1 * CLOCK_SECOND)
-#define STATS_INTERVAL (60 * CLOCK_SECOND)
-#define START_EXPERIMENT_INTERVAL (60*5 * CLOCK_SECOND) // start after 5 minutes
-#define STOP_EXPERIMENT_INTERVAL (60*15 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+//#define STATS_INTERVAL (60 * CLOCK_SECOND)
+#define START_EXPERIMENT_INTERVAL (3 * 60 * CLOCK_SECOND) // start after 5 minutes
+#define STOP_EXPERIMENT_INTERVAL (8 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 #define PAYLOAD_SIZE 15 // 8 bytes for the linkaddr, plus 2 byte for the count
 //static linkaddr_t orig_addr = {{0x00, 0x12, 0x4b, 0x00, 0x14, 0xd5, 0x2b, 0xab}};
@@ -88,7 +88,7 @@
 
 /*---------------------------------------------------------------------------*/
 PROCESS(nullnet_example_process, "NullNet unicast example");
-PROCESS(stats_process, "Process to print out stats");
+//PROCESS(stats_process, "Process to print out stats");
 PROCESS(start_process, "Process to print start experiment");
 PROCESS(stop_process, "Process to print stop experiment");
 
@@ -96,7 +96,9 @@ PROCESS(stop_process, "Process to print stop experiment");
 //PROCESS(allocate_process, "Statically allocate a cell");
 
 //AUTOSTART_PROCESSES(&nullnet_example_process, &sixp_process);
-AUTOSTART_PROCESSES(&nullnet_example_process, &stats_process, &start_process, &stop_process);
+//AUTOSTART_PROCESSES(&nullnet_example_process, &stats_process, &start_process, &stop_process);
+AUTOSTART_PROCESSES(&nullnet_example_process, &start_process, &stop_process);
+
 
 /*---------------------------------------------------------------------------*/
 void input_callback(const void *data, uint16_t len,
@@ -143,8 +145,8 @@ void print_network_information() {
 	if(tsch_is_associated) {
 		struct tsch_neighbor *n = tsch_queue_get_time_source();
 		LOG_INFO("-- PAN ID: 0x%x\n", frame802154_get_pan_id());
-		LOG_INFO("-- Is PAN secured: %u\n", tsch_is_pan_secured);
-		LOG_INFO("-- Join priority: %u\n", tsch_join_priority);
+//		LOG_INFO("-- Is PAN secured: %u\n", tsch_is_pan_secured);
+//		LOG_INFO("-- Join priority: %u\n", tsch_join_priority);
 		LOG_INFO("-- Time source: ");
 		if(n != NULL) {
 			LOG_INFO_LLADDR(tsch_queue_get_nbr_address(n));
@@ -258,118 +260,104 @@ void print_transmission_information() {
 //}
 
 PROCESS_THREAD(nullnet_example_process, ev, data) {
-static struct etimer periodic_timer;
-static uint16_t count = 0;
-static unsigned char addr_and_count[PAYLOAD_SIZE];
-addr_and_count[0] = linkaddr_node_addr.u8[0];
-addr_and_count[1] = linkaddr_node_addr.u8[1];
-addr_and_count[2] = linkaddr_node_addr.u8[2];
-addr_and_count[3] = linkaddr_node_addr.u8[3];
-addr_and_count[4] = linkaddr_node_addr.u8[4];
-addr_and_count[5] = linkaddr_node_addr.u8[5];
-addr_and_count[6] = linkaddr_node_addr.u8[6];
-addr_and_count[7] = linkaddr_node_addr.u8[7];
-addr_and_count[8] = 0;
-addr_and_count[9] = 0;
-addr_and_count[10] = 0; // asn.ls4b
-addr_and_count[11] = 0; // asn.ls4b >> 8
-addr_and_count[12] = 0; // asn.ls4b >> 16
-addr_and_count[13] = 0; // asn.ls4b >> 24
-addr_and_count[14] = 0; // asn.ms1b
+	static struct etimer periodic_timer;
+	static uint16_t count = 0;
+	static unsigned char addr_and_count[PAYLOAD_SIZE];
+	addr_and_count[0] = linkaddr_node_addr.u8[0];
+	addr_and_count[1] = linkaddr_node_addr.u8[1];
+	addr_and_count[2] = linkaddr_node_addr.u8[2];
+	addr_and_count[3] = linkaddr_node_addr.u8[3];
+	addr_and_count[4] = linkaddr_node_addr.u8[4];
+	addr_and_count[5] = linkaddr_node_addr.u8[5];
+	addr_and_count[6] = linkaddr_node_addr.u8[6];
+	addr_and_count[7] = linkaddr_node_addr.u8[7];
+	addr_and_count[8] = 0;
+	addr_and_count[9] = 0;
+	addr_and_count[10] = 0; // asn.ls4b
+	addr_and_count[11] = 0; // asn.ls4b >> 8
+	addr_and_count[12] = 0; // asn.ls4b >> 16
+	addr_and_count[13] = 0; // asn.ls4b >> 24
+	addr_and_count[14] = 0; // asn.ms1b
 
-PROCESS_BEGIN();
+	PROCESS_BEGIN();
 
-//				sixtop_add_sf(&sf_simple_driver);
+	#if MAC_CONF_WITH_TSCH
+	tsch_set_coordinator(linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr));
+	#endif /* MAC_CONF_WITH_TSCH */
 
-#if MAC_CONF_WITH_TSCH
-tsch_set_coordinator(linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr));
-//				if (linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-//					NETSTACK_ROUTING.root_start();
-//				}
-#endif /* MAC_CONF_WITH_TSCH */
+	nullnet_set_input_callback(input_callback);
+	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
 
-/* Initialize NullNet */
-//				nullnet_buf = (uint8_t *) & count;
-//				nullnet_len = sizeof(count);
-nullnet_set_input_callback(input_callback);
-if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-
-etimer_set(&periodic_timer, SEND_INTERVAL);
-while (1) {
-PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
-if (!linkaddr_cmp(&dest_addr, &linkaddr_node_addr)) {
-addr_and_count[8] = ((uint16_t) count >> 0) & 0xFF;
-addr_and_count[9] = ((uint16_t) count >> 8) & 0xFF;
-addr_and_count[10] = tsch_current_asn.ls4b; // asn.ls4b
-addr_and_count[11] = tsch_current_asn.ls4b >> 8; // asn.ls4b >> 8
-addr_and_count[12] = tsch_current_asn.ls4b >> 16; // asn.ls4b >> 16
-addr_and_count[13] = tsch_current_asn.ls4b >> 24; // asn.ls4b >> 24
-addr_and_count[14] = tsch_current_asn.ms1b; // asn.ms1b
-//						linkaddr_t test_addr =  {{ u8[0], u8[1], u8[2], u8[3], u8[4], u8[5], u8[6], u8[7] }};
-LOG_INFO(">>> TX %u (asn %02x.%08lx) to ", count, tsch_current_asn.ms1b, tsch_current_asn.ls4b);
-LOG_INFO_LLADDR(&dest_addr);
-print_transmission_information();
-NETSTACK_NETWORK.output_extra(&dest_addr, &linkaddr_node_addr, addr_and_count);
-count++;
-//						if (slotbonding_num_ack > 10) {
-//							LOG_INFO(">>> Current ETX = %" PRIu16 "\n", (uint16_t)(slotbonding_num_tx / slotbonding_num_ack));
-//						} else {
-//								LOG_INFO(">>> Current ETX = UNDEFINED\n");
-//						}
-}
-etimer_reset(&periodic_timer);
-}
-}
+		etimer_set(&periodic_timer, SEND_INTERVAL);
+		while (1) {
+			PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
+			if (!linkaddr_cmp(&dest_addr, &linkaddr_node_addr)) {
+				addr_and_count[8] = ((uint16_t) count >> 0) & 0xFF;
+				addr_and_count[9] = ((uint16_t) count >> 8) & 0xFF;
+				addr_and_count[10] = tsch_current_asn.ls4b; // asn.ls4b
+				addr_and_count[11] = tsch_current_asn.ls4b >> 8; // asn.ls4b >> 8
+				addr_and_count[12] = tsch_current_asn.ls4b >> 16; // asn.ls4b >> 16
+				addr_and_count[13] = tsch_current_asn.ls4b >> 24; // asn.ls4b >> 24
+				addr_and_count[14] = tsch_current_asn.ms1b; // asn.ms1b
+				LOG_INFO(">>> TX %u (asn %02x.%08lx) to ", count, tsch_current_asn.ms1b, tsch_current_asn.ls4b);
+				LOG_INFO_LLADDR(&dest_addr);
+				print_transmission_information();
+				NETSTACK_NETWORK.output_extra(&dest_addr, &linkaddr_node_addr, addr_and_count);
+				count++;
+			}
+			etimer_reset(&periodic_timer);
+		}
+	}
 
 
-PROCESS_END();
+	PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
 
 
-PROCESS_THREAD(stats_process, ev, data) {
-static struct etimer periodic_timer;
-
-PROCESS_BEGIN();
-etimer_set(&periodic_timer, STATS_INTERVAL);
-while (1) {
-PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
-print_network_information();
-etimer_reset(&periodic_timer);
-}
-
-
-PROCESS_END();
-}
+//PROCESS_THREAD(stats_process, ev, data) {
+//static struct etimer periodic_timer;
+//
+//PROCESS_BEGIN();
+//etimer_set(&periodic_timer, STATS_INTERVAL);
+//while (1) {
+//PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&periodic_timer));
+//print_network_information();
+//etimer_reset(&periodic_timer);
+//}
+//
+//
+//PROCESS_END();
+//}
 /*---------------------------------------------------------------------------*/
 
 // process to print out start of experiment
 PROCESS_THREAD(start_process, ev, data) {
-static struct etimer one_shot_timer;
-PROCESS_BEGIN();
-etimer_set(&one_shot_timer, START_EXPERIMENT_INTERVAL);
-PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer));
-LOG_INFO("***** START EXPERIMENT *****\n");
-if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-print_transmission_information();
-}
-print_network_information();
-PROCESS_END();
+	static struct etimer one_shot_timer;
+	PROCESS_BEGIN();
+	etimer_set(&one_shot_timer, START_EXPERIMENT_INTERVAL);
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer));
+	LOG_INFO("***** START EXPERIMENT *****\n");
+	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+		print_transmission_information();
+	}
+	print_network_information();
+	PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
 
 // process to print out end of experiment
 PROCESS_THREAD(stop_process, ev, data) {
-static struct etimer one_shot_timer;
-PROCESS_BEGIN();
-etimer_set(&one_shot_timer, STOP_EXPERIMENT_INTERVAL);
-PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer));
-LOG_INFO("***** STOP EXPERIMENT *****\n");
-if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-print_transmission_information();
-}
-print_network_information();
-PROCESS_END();
+	static struct etimer one_shot_timer;
+	PROCESS_BEGIN();
+	etimer_set(&one_shot_timer, STOP_EXPERIMENT_INTERVAL);
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer));
+	print_network_information();
+	LOG_INFO("***** STOP EXPERIMENT *****\n");
+	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+		print_transmission_information();
+	}
+	PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
 
