@@ -60,8 +60,8 @@
 /* Configuration */
 #define SEND_INTERVAL (1 * CLOCK_SECOND)
 //#define STATS_INTERVAL (60 * CLOCK_SECOND)
-#define START_EXPERIMENT_INTERVAL (3 * 60 * CLOCK_SECOND) // start after 5 minutes
-#define STOP_EXPERIMENT_INTERVAL (8 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+#define START_EXPERIMENT_INTERVAL (4 * 60 * CLOCK_SECOND) // start after 5 minutes
+#define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 #define PAYLOAD_SIZE 15 // 8 bytes for the linkaddr, plus 2 byte for the count
 //static linkaddr_t orig_addr = {{0x00, 0x12, 0x4b, 0x00, 0x14, 0xd5, 0x2b, 0xab}};
@@ -83,6 +83,8 @@
 
 
 //static linkaddr_t coordinator_addr =  {{ 0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe3, 0x20 }};
+
+static int start_experiment = 0;
 
 #endif /* MAC_CONF_WITH_TSCH */
 
@@ -206,6 +208,15 @@ void print_transmission_information() {
 		PRIu16
 		")\n", slotbonding_num_tx, slotbonding_num_ack);
 	}
+//	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+////		if (slotbonding_num_tx > 50 && slotbonding_num_ack < 2) {
+//		if (slotbonding_num_tx > 20) {
+//			LOG_INFO("Disassociating from network because for some reason, I can't connect.\n");
+//			slotbonding_num_tx = 0;
+//			slotbonding_num_ack = 0;
+//			tsch_disassociate();
+//		}
+//	}
 }
 
 //PROCESS_THREAD(allocate_process, ev, data) {
@@ -304,6 +315,16 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 				print_transmission_information();
 				NETSTACK_NETWORK.output_extra(&dest_addr, &linkaddr_node_addr, addr_and_count);
 				count++;
+				if (start_experiment == 0 && !linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+				// only do so if the experiment has not started yet
+					if (count > 45 && slotbonding_num_ack < 2) {
+						LOG_INFO("Disassociating from network because for some reason, I can't connect.\n");
+						count = 0;
+						slotbonding_num_tx = 0;
+						slotbonding_num_ack = 0;
+						tsch_disassociate();
+					}
+				}
 			}
 			etimer_reset(&periodic_timer);
 		}
@@ -338,6 +359,7 @@ PROCESS_THREAD(start_process, ev, data) {
 	etimer_set(&one_shot_timer, START_EXPERIMENT_INTERVAL);
 	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer));
 	LOG_INFO("***** START EXPERIMENT *****\n");
+	start_experiment = 1;
 	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
 		print_transmission_information();
 	}
