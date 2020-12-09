@@ -15,13 +15,13 @@
 ///// START CHANGE NUMTX /////
 
 
-//#define TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS 1
+//#define TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS 0
 
 
 ///// START CHANGE NUMRX /////
 
 
-//#define TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS 0
+//#define TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS 1
 
 
 ///// START CHANGE PARENT /////
@@ -44,7 +44,7 @@ typedef struct {
 
 
 
-//
+
 //static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
 //		{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_1000_KBPS_PHY}
 //};
