@@ -61,7 +61,7 @@
 /* The RSSI offset in dBm */
 #define RF_CFG_RSSI_OFFSET              (-81)
 /*---------------------------------------------------------------------------*/
-static const char rf_cfg_descriptor[] = "802.15.4g 863-870MHz MR-FSK mode #1";
+static const char rf_cfg_descriptor[] = "802.15.4g 863-870MHz MR-FSK mode #1 (50kbps)";
 /*---------------------------------------------------------------------------*/
 
 # define CC1200_TSCH_RF_RECONF_WAIT              3000
