@@ -78,7 +78,7 @@
 
 // define the PHY that is used to scan and associate to the network
 // this PHY should equal the PHY of the minimal cell
-//#define TSCH_CONF_SLOTBONDING_ASSOCIATE cc1200_802154g_863_870_fsk_50kbps
+#define TSCH_CONF_SLOTBONDING_ASSOCIATE cc1200_802154g_863_870_fsk_50kbps
 //#define TSCH_CONF_SLOTBONDING_ASSOCIATE cc1200_868_4gfsk_1000kbps
 
 /* Force a topology using the tsch_topology.* functionality. */
