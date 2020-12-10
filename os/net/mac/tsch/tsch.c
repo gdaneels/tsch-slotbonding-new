@@ -244,6 +244,7 @@ tsch_reset(void)
   for(i = 0; i < tsch_ts_elements_count; i++) {
     tsch_timing_us[i] = tsch_default_timing_us[i];
     tsch_timing[i] = US_TO_RTIMERTICKS(tsch_timing_us[i]);
+    LOG_INFO("After reset(), timings at ix i = %d, is %" PRIu16 " us\n", i, tsch_timing_us[i]);
   }
 #ifdef TSCH_SLOTBONDING
   for(i = 0; i < tsch_ts_elements_count; i++) {
@@ -821,6 +822,17 @@ tsch_associate(const struct input_packet *input_eb, rtimer_clock_t timestamp)
 PT_THREAD(tsch_scan(struct pt *pt))
 {
   PT_BEGIN(pt);
+
+#if TSCH_SLOTBONDING
+    // make sure that you always start scanning with the correct radio configuration
+    // it could be that you get disassociated when you are using the wrong radio: in that case you will use that wrong
+    // radio to scan. To avoid that: make sure to set the correct associate radio here once more.
+     const char * desc = TSCH_SLOTBONDING_ASSOCIATE.cfg_descriptor;
+    LOG_INFO("For scanning, reconfigure to ");
+    LOG_INFO_(desc);
+    LOG_INFO_(".\n");
+    NETSTACK_RADIO.reconfigure(&TSCH_SLOTBONDING_ASSOCIATE);
+#endif
 
   static struct input_packet input_eb;
   static struct etimer scan_timer;
