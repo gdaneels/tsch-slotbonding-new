@@ -227,6 +227,17 @@ tsch_reset(void)
   frame802154_set_pan_id(0xffff);
   /* First make sure pending packet callbacks are sent etc */
   process_post_synch(&tsch_pending_events_process, PROCESS_EVENT_POLL, NULL);
+
+#if TSCH_SLOTBONDING
+    // initialize the radio to the PHY you want to associate with
+	// this PHY will also be stored in tsch_default_timing_us
+    const char * desc = TSCH_SLOTBONDING_ASSOCIATE.cfg_descriptor;
+    LOG_INFO("In tsch_reset(), reconfigure to ");
+    LOG_INFO_(desc);
+    LOG_INFO_(".\n");
+    NETSTACK_RADIO.reconfigure(&TSCH_SLOTBONDING_ASSOCIATE);
+#endif
+
   /* Reset neighbor queues */
   tsch_queue_reset();
   /* Remove unused neighbors */
@@ -237,10 +248,11 @@ tsch_reset(void)
   TSCH_ASN_INIT(tsch_current_asn, 0, 0);
   current_link = NULL;
   /* Reset timeslot timing to defaults */
+#if TSCH_SLOTBONDING
+  tsch_default_timing_us = TSCH_SLOTBONDING_DEFAULT_TIMINGS_US;
+#else
   tsch_default_timing_us = TSCH_DEFAULT_TIMESLOT_TIMING;
-//#if TSCH_SLOTBONDING
-//  tsch_default_timing_us = TSCH_SLOTBONDING_DEFAULT_TIMINGS_US;
-//#endif
+#endif
   for(i = 0; i < tsch_ts_elements_count; i++) {
     tsch_timing_us[i] = tsch_default_timing_us[i];
     tsch_timing[i] = US_TO_RTIMERTICKS(tsch_timing_us[i]);
@@ -675,7 +687,11 @@ tsch_associate(const struct input_packet *input_eb, rtimer_clock_t timestamp)
   /* TSCH timeslot timing */
   for(i = 0; i < tsch_ts_elements_count; i++) {
     if(ies.ie_tsch_timeslot_id == 0) {
+#if TSCH_SLOTBONDING
+      tsch_timing_us[i] = TSCH_SLOTBONDING_DEFAULT_TIMINGS_US[i];
+#else
       tsch_timing_us[i] = tsch_default_timing_us[i];
+#endif
     } else {
       tsch_timing_us[i] = ies.ie_tsch_timeslot[i];
     }
@@ -771,8 +787,8 @@ tsch_associate(const struct input_packet *input_eb, rtimer_clock_t timestamp)
 
       /* Synchronize on EB */
 #if TSCH_SLOTBONDING
-      // here you have to use the timings of the associate PHY
-		tsch_slot_operation_sync(timestamp - US_TO_RTIMERTICKS(TSCH_SLOTBONDING_ASSOCIATE.tsch_timing[tsch_ts_tx_offset]), &tsch_current_asn);
+      // here you have to use the timings of the associate PHY because the EB was sent in such a timeslot
+	  tsch_slot_operation_sync(timestamp - US_TO_RTIMERTICKS(TSCH_SLOTBONDING_ASSOCIATE.tsch_timing[tsch_ts_tx_offset]), &tsch_current_asn);
 #else
       tsch_slot_operation_sync(timestamp - tsch_timing[tsch_ts_tx_offset], &tsch_current_asn);
 #endif
@@ -827,7 +843,7 @@ PT_THREAD(tsch_scan(struct pt *pt))
     // make sure that you always start scanning with the correct radio configuration
     // it could be that you get disassociated when you are using the wrong radio: in that case you will use that wrong
     // radio to scan. To avoid that: make sure to set the correct associate radio here once more.
-     const char * desc = TSCH_SLOTBONDING_ASSOCIATE.cfg_descriptor;
+    const char * desc = TSCH_SLOTBONDING_ASSOCIATE.cfg_descriptor;
     LOG_INFO("For scanning, reconfigure to ");
     LOG_INFO_(desc);
     LOG_INFO_(".\n");
@@ -1056,17 +1072,6 @@ tsch_init(void)
   radio_value_t radio_max_payload_len;
 
   rtimer_clock_t t;
-
-#if TSCH_SLOTBONDING
-  // this statement should be called before the reset() so the TSCH_DEFAULT_TIMING_US is set correctly to the 1000 kbps PHY
-    // this will be necessary for when joining the network in tsch_associate where an entry of tsch_timing will be used
-    // if this is not called, this entry of tsch_timing will be the wrong one (50 kbps PHY)
-     const char * desc = TSCH_SLOTBONDING_ASSOCIATE.cfg_descriptor;
-    LOG_INFO("Before init'ing TSCH, reconfigure to ");
-    LOG_INFO_(desc);
-    LOG_INFO_(".\n");
-    NETSTACK_RADIO.reconfigure(&TSCH_SLOTBONDING_ASSOCIATE);
-#endif
 
   /* Check that the platform provides a TSCH timeslot timing template */
   if(TSCH_DEFAULT_TIMESLOT_TIMING == NULL) {
