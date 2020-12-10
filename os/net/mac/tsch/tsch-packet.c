@@ -404,13 +404,6 @@ tsch_packet_parse_eb(const uint8_t *buf, int buf_size,
     return 0;
   }
 
-#if TSCH_FORCE_TOPOLOGY
-  if (!tsch_allowed_eb((const linkaddr_t *) &frame->src_addr)) {
-		LOG_INFO("! received eb from wrong node\n");
-		return 0;
-	}
-#endif
-
   if(frame->fcf.frame_version < FRAME802154_IEEE802154_2015
      || frame->fcf.frame_type != FRAME802154_BEACONFRAME) {
     LOG_INFO("! parse_eb: frame is not a TSCH beacon." \
@@ -423,6 +416,13 @@ tsch_packet_parse_eb(const uint8_t *buf, int buf_size,
     LOG_INFO_("\n");
     return 0;
   }
+
+#if TSCH_FORCE_TOPOLOGY
+  if (!tsch_allowed_eb((const linkaddr_t *) &frame->src_addr)) {
+		LOG_INFO("! received eb from wrong node\n");
+		return 0;
+	}
+#endif
 
   if(hdr_len != NULL) {
     *hdr_len = ret;
