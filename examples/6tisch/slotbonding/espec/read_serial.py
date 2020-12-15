@@ -6,7 +6,7 @@ import sys
 log_file = sys.argv[1]
 
 ser = serial.Serial(
-    port='/dev/ttyUSB1', \
+    port='/dev/ttyUSB0', \
     baudrate=115200, \
     parity=serial.PARITY_NONE, \
     stopbits=serial.STOPBITS_ONE, \
