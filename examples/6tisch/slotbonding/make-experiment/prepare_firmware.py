@@ -103,8 +103,6 @@ def make_destaddr(node_id=None):
 
 def make_sendinterval():
     path_to_node_file = "../../../../examples/6tisch/slotbonding/node.c"
-    if node_id is None:
-        raise Exception('Node ID is None in make_sendinterval of prepare_firmware!')
     statement = "#define SEND_INTERVAL {0}".format(str(data['packet_generation'])); # put it to its own address, NOT correct, but will be ignored.
     replace(path_to_node_file, "///// START CHANGE SENDINTERVAL /////", statement)
 
