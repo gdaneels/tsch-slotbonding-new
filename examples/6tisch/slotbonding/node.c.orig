@@ -58,10 +58,16 @@
 #define LOG_LEVEL LOG_LEVEL_INFO
 
 /* Configuration */
-#define SEND_INTERVAL (1 * CLOCK_SECOND)
+//#define SEND_INTERVAL (1 * CLOCK_SECOND)
+//#define SEND_INTERVAL 128l
+
+
+///// START CHANGE SENDINTERVAL /////
+
+
 //#define STATS_INTERVAL (60 * CLOCK_SECOND)
-#define START_EXPERIMENT_INTERVAL (4 * 60 * CLOCK_SECOND) // start after 5 minutes
-#define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+#define START_EXPERIMENT_INTERVAL (15 * 60 * CLOCK_SECOND) // start after 5 minutes
+#define STOP_EXPERIMENT_INTERVAL (20 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 #define PAYLOAD_SIZE 15 // 8 bytes for the linkaddr, plus 2 byte for the count
 //static linkaddr_t orig_addr = {{0x00, 0x12, 0x4b, 0x00, 0x14, 0xd5, 0x2b, 0xab}};
@@ -193,13 +199,7 @@ void print_network_information() {
 
 void print_transmission_information() {
 	if (slotbonding_num_ack > 10) {
-		LOG_INFO_(" (ETX = %"
-		PRIu16
-		", NUM_TX = %"
-		PRIu16
-		", NUM_ACK = %"
-		PRIu16
-		")\n", (uint16_t)(slotbonding_num_tx / slotbonding_num_ack),
+		LOG_INFO_(" (ETX = %" PRIu16 ", NUM_TX = %" PRIu16 ", NUM_ACK = %" PRIu16 ")\n", (uint16_t)(slotbonding_num_tx / slotbonding_num_ack),
 				slotbonding_num_tx, slotbonding_num_ack);
 	} else {
 		LOG_INFO_(" (ETX = UNDEFINED, NUM_TX = %"
