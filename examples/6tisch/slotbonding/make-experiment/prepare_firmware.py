@@ -101,7 +101,7 @@ def make_destaddr(node_id=None):
         statement = "static linkaddr_t dest_addr = {0};".format(get_addr(node_id)); # put it to its own address, NOT correct, but will be ignored.
     replace(path_to_node_file, "///// START CHANGE DESTADDR /////", statement)
 
-def make_sendinterval(packet_generation):
+def make_sendinterval():
     path_to_node_file = "../../../../examples/6tisch/slotbonding/node.c"
     if node_id is None:
         raise Exception('Node ID is None in make_sendinterval of prepare_firmware!')
@@ -144,7 +144,7 @@ def main():
     adjust_topology(node_id=node_id)
     make_coordinator(node_id=node_id)
     make_destaddr(node_id=node_id)
-    make_sendinterval(packet_generation=packet_generation)
+    make_sendinterval()
     make_panid()
     make_slotframelength()
     make_frameretries()
