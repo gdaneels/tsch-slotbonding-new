@@ -63,8 +63,8 @@
 /******************* Configure TSCH ********************/
 /*******************************************************/
 
-#define QUEUEBUF_CONF_NUM 16
-#define TSCH_CONF_MAX_INCOMING_PACKETS 16
+#define QUEUEBUF_CONF_NUM 8
+#define TSCH_CONF_MAX_INCOMING_PACKETS 8
 
 #define TSCH_CONF_EB_PERIOD (7 * CLOCK_SECOND)
 
@@ -99,7 +99,7 @@
 
 /* 6TiSCH minimal schedule length.
  * Larger values result in less frequent active slots: reduces capacity and saves energy. */
-//#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 79
+//#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 17
 
 
 ///// START CHANGE SLOTFRAMELENGTH /////
