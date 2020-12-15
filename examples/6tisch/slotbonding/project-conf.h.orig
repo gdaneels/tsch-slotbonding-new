@@ -66,7 +66,7 @@
 #define QUEUEBUF_CONF_NUM 16
 #define TSCH_CONF_MAX_INCOMING_PACKETS 16
 
-#define TSCH_CONF_EB_PERIOD (5 * CLOCK_SECOND)
+#define TSCH_CONF_EB_PERIOD (7 * CLOCK_SECOND)
 
 #define TSCH_CONF_SLOTBONDING 1
 
@@ -85,8 +85,7 @@
 #define TSCH_CONF_FORCE_TOPOLOGY 1
 
 /* Force a star topology with only the coordinator transmitting an EB. */
-#define TSCH_CONF_STAR_TOPOLOGY 1
-
+#define TSCH_CONF_STAR_TOPOLOGY 0
 /* IEEE802.15.4 PANID */
 
 ///// START CHANGE PANID /////
