@@ -99,7 +99,7 @@
 
 /* 6TiSCH minimal schedule length.
  * Larger values result in less frequent active slots: reduces capacity and saves energy. */
-#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 79
+//#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 79
 
 
 ///// START CHANGE SLOTFRAMELENGTH /////
