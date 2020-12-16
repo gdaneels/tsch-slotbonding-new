@@ -66,8 +66,12 @@
 
 
 //#define STATS_INTERVAL (60 * CLOCK_SECOND)
-#define START_EXPERIMENT_INTERVAL (10 * 60 * CLOCK_SECOND) // start after 5 minutes
-#define STOP_EXPERIMENT_INTERVAL (15 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+#define START_EXPERIMENT_INTERVAL (4 * 60 * CLOCK_SECOND) // start after 5 minutes
+#define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+
+//#define START_EXPERIMENT_INTERVAL (10 * 60 * CLOCK_SECOND) // start after 5 minutes
+//#define STOP_EXPERIMENT_INTERVAL (15 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+
 
 #define PAYLOAD_SIZE 15 // 8 bytes for the linkaddr, plus 2 byte for the count
 //static linkaddr_t orig_addr = {{0x00, 0x12, 0x4b, 0x00, 0x14, 0xd5, 0x2b, 0xab}};
