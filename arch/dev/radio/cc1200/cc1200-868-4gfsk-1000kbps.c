@@ -50,7 +50,8 @@
 /* The maximum channel */
 #define RF_CFG_MAX_CHANNEL              1
 /* The maximum output power in dBm */
-#define RF_CFG_MAX_TXPOWER              CC1200_CONST_TX_POWER_MAX
+#define RF_CFG_MAX_TXPOWER              0
+//#define RF_CFG_MAX_TXPOWER              CC1200_CONST_TX_POWER_MAX
 /* The carrier sense level used for CCA in dBm */
 #define RF_CFG_CCA_THRESHOLD            (-91)
 /* The RSSI offset in dBm */
