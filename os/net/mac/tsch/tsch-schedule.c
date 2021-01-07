@@ -551,7 +551,7 @@ tsch_schedule_create_minimal(void)
 
   tsch_schedule_add_link(sf_min,
       (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
-      LINK_TYPE_ADVERTISING, &tsch_broadcast_address,
+      LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
       0, 0, 1
 #if TSCH_SLOTBONDING
           , TSCH_SLOTBONDING_50_KBPS_PHY
@@ -559,7 +559,7 @@ tsch_schedule_create_minimal(void)
   );
 	tsch_schedule_add_link(sf_min,
 						   (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
-						   LINK_TYPE_ADVERTISING, &tsch_broadcast_address,
+						   LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
 						   24, 0, 1
 #if TSCH_SLOTBONDING
 			, TSCH_SLOTBONDING_50_KBPS_PHY
@@ -567,7 +567,7 @@ tsch_schedule_create_minimal(void)
 	);
 	tsch_schedule_add_link(sf_min,
 						   (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
-						   LINK_TYPE_ADVERTISING, &tsch_broadcast_address,
+						   LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
 						   48, 0, 1
 #if TSCH_SLOTBONDING
 			, TSCH_SLOTBONDING_50_KBPS_PHY
