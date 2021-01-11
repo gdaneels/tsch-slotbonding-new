@@ -60,6 +60,19 @@ cd ~
 # make PORT=/dev/ttyUSB0 serialview >> ${OUTPUT_FILE}
 timeout ${RUNTIME}s python3 read_serial.py ${OUTPUT_FILE} 1>>${LOG_FILE} 2>>${ERROR_FILE}
 
+# go back to the example main directory
+cd ~/tsch-slotbonding-new/examples/hello-world
+
+# build the software
+if [ ! -s ${ERROR_FILE} ]; then
+        make TARGET=zoul BOARD=remote-revb hello-world 1>>${LOG_FILE} 2>>${ERROR_FILE}
+        make TARGET=zoul BOARD=remote-revb PORT=/dev/ttyUSB0 hello-world.upload 1>>${LOG_FILE} 2>>${ERROR_FILE}
+else
+        echo "Did not run make hello-world command because there was an error before." >> ${ERROR_FILE}
+fi
+
+cd ~
+
 NFS=/groups/ilabt-imec-be/tsch-slotbonding/exp/${EXPERIMENT_NAME}/datastore/${HOSTNAME%%.*}/${ITERATION}
 mkdir -p ${NFS}
 cp ${LOG_FILE} ${NFS}
