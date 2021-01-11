@@ -138,10 +138,10 @@ void input_callback(const void *data, uint16_t len,
 		int32_t diff = TSCH_ASN_DIFF(tsch_current_asn, received_asn);
 		if (linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) { // only print this if you are the coordinator
 			LOG_INFO(">>> RX %u (asn %02x.%08lx - d %" PRIu32 ") from ", count, received_asn.ms1b, received_asn.ls4b, diff);
+			linkaddr_t orig_src_addr =  {{ addr_and_count[0], addr_and_count[1], addr_and_count[2], addr_and_count[3], addr_and_count[4], addr_and_count[5], addr_and_count[6], addr_and_count[7] }};
+			LOG_INFO_LLADDR(&orig_src_addr);
+			LOG_INFO_("\n");
 		}
-		linkaddr_t orig_src_addr =  {{ addr_and_count[0], addr_and_count[1], addr_and_count[2], addr_and_count[3], addr_and_count[4], addr_and_count[5], addr_and_count[6], addr_and_count[7] }};
-		LOG_INFO_LLADDR(&orig_src_addr);
-		LOG_INFO_("\n");
 		if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) { // if this is not the coordinator, forward to parent
 //			LOG_INFO(">>> FW %u to ", count);
 //			LOG_INFO_LLADDR(&dest_addr);
