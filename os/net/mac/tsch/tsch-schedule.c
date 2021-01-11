@@ -557,22 +557,31 @@ tsch_schedule_create_minimal(void)
           , TSCH_SLOTBONDING_50_KBPS_PHY
 #endif
   );
-	tsch_schedule_add_link(sf_min,
-						   (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
-						   LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
-						   24, 0, 1
+
+  tsch_schedule_add_link(sf_min,
+                         (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
+                         LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
+                         4, 1, 1
 #if TSCH_SLOTBONDING
-			, TSCH_SLOTBONDING_50_KBPS_PHY
+          , TSCH_SLOTBONDING_50_KBPS_PHY
 #endif
-	);
-	tsch_schedule_add_link(sf_min,
-						   (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
-						   LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
-						   48, 0, 1
-#if TSCH_SLOTBONDING
-			, TSCH_SLOTBONDING_50_KBPS_PHY
-#endif
-	);
+  );
+//	tsch_schedule_add_link(sf_min,
+//						   (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
+//						   LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
+//						   24, 0, 1
+//#if TSCH_SLOTBONDING
+//			, TSCH_SLOTBONDING_50_KBPS_PHY
+//#endif
+//	);
+//	tsch_schedule_add_link(sf_min,
+//						   (LINK_OPTION_RX | LINK_OPTION_TX | LINK_OPTION_SHARED | LINK_OPTION_TIME_KEEPING),
+//						   LINK_TYPE_ADVERTISING_ONLY, &tsch_broadcast_address,
+//						   48, 0, 1
+//#if TSCH_SLOTBONDING
+//			, TSCH_SLOTBONDING_50_KBPS_PHY
+//#endif
+//	);
 //  if (!tsch_is_coordinator) {
 //    tsch_schedule_add_link(sf_min,
 //                           (LINK_OPTION_TX),
