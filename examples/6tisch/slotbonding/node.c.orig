@@ -155,7 +155,7 @@ void input_callback(const void *data, uint16_t len,
 
 void print_network_information() {
 	struct tsch_slotframe *sf;
-	LOG_INFO("TSCH status:\n");
+//	LOG_INFO("TSCH status:\n");
 
 	LOG_INFO("-- Is coordinator: %u\n", tsch_is_coordinator);
 	LOG_INFO("-- Is associated: %u\n", tsch_is_associated);
@@ -171,12 +171,12 @@ void print_network_information() {
 		} else {
 			LOG_INFO_("none\n");
 		}
-		LOG_INFO("-- Last synchronized: %lu seconds ago\n",
-				 (clock_time() - tsch_last_sync_time) / CLOCK_SECOND);
-		LOG_INFO("-- Drift w.r.t. coordinator: %ld ppm\n",
-				 tsch_adaptive_timesync_get_drift_ppm());
-		LOG_INFO("-- Network uptime: %lu seconds\n",
-				 (unsigned long)(tsch_get_network_uptime_ticks() / CLOCK_SECOND));
+//		LOG_INFO("-- Last synchronized: %lu seconds ago\n",
+//				 (clock_time() - tsch_last_sync_time) / CLOCK_SECOND);
+//		LOG_INFO("-- Drift w.r.t. coordinator: %ld ppm\n",
+//				 tsch_adaptive_timesync_get_drift_ppm());
+//		LOG_INFO("-- Network uptime: %lu seconds\n",
+//				 (unsigned long)(tsch_get_network_uptime_ticks() / CLOCK_SECOND));
 	}
 
 	if(!tsch_is_locked()) {
@@ -184,12 +184,12 @@ void print_network_information() {
 		if (sf == NULL) {
 			LOG_INFO("TSCH schedule: no slotframe\n");
 		} else {
-			LOG_INFO("TSCH schedule:\n");
+//			LOG_INFO("TSCH schedule:\n");
 			while (sf != NULL) {
 				struct tsch_link *l = list_head(sf->links_list);
-				LOG_INFO("-- Slotframe: handle %u, size %u, links:\n", sf->handle, sf->size.val);
+				LOG_INFO("-- SF: handle %u, size %u, links:\n", sf->handle, sf->size.val);
 				while (l != NULL) {
-					LOG_INFO("---- Options %02x, type %u, timeslot %u, channel offset %u, phy %u, address ", l->link_options, l->link_type, l->timeslot, l->channel_offset
+					LOG_INFO("---- Opt %02x, t %u, ts %u, ch %u, phy %u, addr ", l->link_options, l->link_type, l->timeslot, l->channel_offset
 #if TSCH_SLOTBONDING
 							, l->current_phy
 #else
@@ -204,6 +204,10 @@ void print_network_information() {
 			}
 		}
 	}
+}
+
+void print_network_information_short() {
+	LOG_INFO("-- Is associated: %u\n", tsch_is_associated);
 }
 
 void print_transmission_information() {
@@ -363,26 +367,26 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 
 // process to print out start of experiment
 PROCESS_THREAD(start_process, ev, data) {
-	static struct etimer one_shot_timer;
+	static struct etimer one_shot_timer1;
 	PROCESS_BEGIN();
-	etimer_set(&one_shot_timer, START_EXPERIMENT_INTERVAL);
-	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer));
+	etimer_set(&one_shot_timer1, START_EXPERIMENT_INTERVAL);
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer1));
 	LOG_INFO("***** START EXPERIMENT *****\n");
 	start_experiment = 1;
 	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
 		print_transmission_information();
 	}
-	print_network_information();
+	print_network_information_short();
 	PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
 
 // process to print out end of experiment
 PROCESS_THREAD(stop_process, ev, data) {
-	static struct etimer one_shot_timer;
+	static struct etimer one_shot_timer2;
 	PROCESS_BEGIN();
-	etimer_set(&one_shot_timer, STOP_EXPERIMENT_INTERVAL);
-	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer));
+	etimer_set(&one_shot_timer2, STOP_EXPERIMENT_INTERVAL);
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer2));
 	print_network_information();
 	LOG_INFO("***** STOP EXPERIMENT *****\n");
 	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
