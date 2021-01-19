@@ -85,7 +85,7 @@
 #define TSCH_CONF_FORCE_TOPOLOGY 1
 
 /* Force a star topology with only the coordinator transmitting an EB. */
-#define TSCH_CONF_STAR_TOPOLOGY 1
+#define TSCH_CONF_STAR_TOPOLOGY 0
 /* IEEE802.15.4 PANID */
 
 ///// START CHANGE PANID /////
