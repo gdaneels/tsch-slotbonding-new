@@ -66,7 +66,7 @@
 
 
 //#define STATS_INTERVAL (60 * CLOCK_SECOND)
-#define START_EXPERIMENT_INTERVAL (1 * 60 * CLOCK_SECOND) // start after 5 minutes
+#define START_EXPERIMENT_INTERVAL (5 * 60 * CLOCK_SECOND) // start after 5 minutes
 #define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 //#define START_EXPERIMENT_INTERVAL (10 * 60 * CLOCK_SECOND) // start after 5 minutes
