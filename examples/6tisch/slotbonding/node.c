@@ -66,7 +66,7 @@
 
 
 //#define STATS_INTERVAL (60 * CLOCK_SECOND)
-#define START_EXPERIMENT_INTERVAL (4 * 60 * CLOCK_SECOND) // start after 5 minutes
+#define START_EXPERIMENT_INTERVAL (1 * 60 * CLOCK_SECOND) // start after 5 minutes
 #define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 //#define START_EXPERIMENT_INTERVAL (10 * 60 * CLOCK_SECOND) // start after 5 minutes
@@ -103,16 +103,20 @@ static int start_experiment = 0;
 /*---------------------------------------------------------------------------*/
 PROCESS(nullnet_example_process, "NullNet unicast example");
 //PROCESS(stats_process, "Process to print out stats");
-PROCESS(start_process, "Process to print start experiment");
-PROCESS(stop_process, "Process to print stop experiment");
+//PROCESS(start_process, "Process to print start experiment");
+//PROCESS(stop_process, "Process to print stop experiment");
+
+PROCESS(start_stop_process, "Process to print start and stop experiment");
 
 //PROCESS(sixp_process, "6P process");
 //PROCESS(allocate_process, "Statically allocate a cell");
 
 //AUTOSTART_PROCESSES(&nullnet_example_process, &sixp_process);
 //AUTOSTART_PROCESSES(&nullnet_example_process, &stats_process, &start_process, &stop_process);
-AUTOSTART_PROCESSES(&nullnet_example_process, &start_process, &stop_process);
 
+// monitoring
+//AUTOSTART_PROCESSES(&nullnet_example_process, &start_process, &stop_process);
+AUTOSTART_PROCESSES(&nullnet_example_process, &start_stop_process);
 
 /*---------------------------------------------------------------------------*/
 void input_callback(const void *data, uint16_t len,
@@ -366,10 +370,10 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 /*---------------------------------------------------------------------------*/
 
 // process to print out start of experiment
-PROCESS_THREAD(start_process, ev, data) {
-	static struct etimer one_shot_timer1;
+PROCESS_THREAD(start_stop_process, ev, data) {
+	static struct etimer two_shot_timer1;
 	PROCESS_BEGIN();
-	etimer_set(&one_shot_timer1, START_EXPERIMENT_INTERVAL);
+	etimer_set(&two_shot_timer1, START_EXPERIMENT_INTERVAL);
 	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer1));
 	LOG_INFO("***** START EXPERIMENT *****\n");
 	start_experiment = 1;
@@ -377,16 +381,11 @@ PROCESS_THREAD(start_process, ev, data) {
 		print_transmission_information();
 	}
 	print_network_information_short();
-	PROCESS_END();
-}
-/*---------------------------------------------------------------------------*/
 
-// process to print out end of experiment
-PROCESS_THREAD(stop_process, ev, data) {
-	static struct etimer one_shot_timer2;
-	PROCESS_BEGIN();
-	etimer_set(&one_shot_timer2, STOP_EXPERIMENT_INTERVAL);
-	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer2));
+	// reset the timer
+	etimer_reset(&two_shot_timer1);
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
+
 	print_network_information();
 	LOG_INFO("***** STOP EXPERIMENT *****\n");
 	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
@@ -394,6 +393,37 @@ PROCESS_THREAD(stop_process, ev, data) {
 	}
 	PROCESS_END();
 }
+
+//
+//// process to print out start of experiment
+//PROCESS_THREAD(start_process, ev, data) {
+//	static struct etimer one_shot_timer1;
+//	PROCESS_BEGIN();
+//	etimer_set(&one_shot_timer1, START_EXPERIMENT_INTERVAL);
+//	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer1));
+//	LOG_INFO("***** START EXPERIMENT *****\n");
+//	start_experiment = 1;
+//	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+//		print_transmission_information();
+//	}
+//	print_network_information_short();
+//	PROCESS_END();
+//}
+///*---------------------------------------------------------------------------*/
+//
+//// process to print out end of experiment
+//PROCESS_THREAD(stop_process, ev, data) {
+//	static struct etimer one_shot_timer2;
+//	PROCESS_BEGIN();
+//	etimer_set(&one_shot_timer2, STOP_EXPERIMENT_INTERVAL);
+//	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer2));
+//	print_network_information();
+//	LOG_INFO("***** STOP EXPERIMENT *****\n");
+//	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+//		print_transmission_information();
+//	}
+//	PROCESS_END();
+//}
 /*---------------------------------------------------------------------------*/
 
 
