@@ -374,7 +374,7 @@ PROCESS_THREAD(start_stop_process, ev, data) {
 	static struct etimer two_shot_timer1;
 	PROCESS_BEGIN();
 	etimer_set(&two_shot_timer1, START_EXPERIMENT_INTERVAL);
-	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&one_shot_timer1));
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1));
 	LOG_INFO("***** START EXPERIMENT *****\n");
 	start_experiment = 1;
 	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
