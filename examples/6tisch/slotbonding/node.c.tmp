@@ -69,6 +69,10 @@
 #define START_EXPERIMENT_INTERVAL (5 * 60 * CLOCK_SECOND) // start after 5 minutes
 #define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
+#define STOP_DISASSOC_SLOTS 26666 // 4 minutes in slots of 9s
+#define START_EXP_SLOTS 33333 // 5 minutes in slots of 9s
+#define STOP_EXP_SLOTS 66666 // 5 minutes in slots of 9s
+
 //#define START_EXPERIMENT_INTERVAL (10 * 60 * CLOCK_SECOND) // start after 5 minutes
 //#define STOP_EXPERIMENT_INTERVAL (15 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
@@ -106,7 +110,7 @@ PROCESS(nullnet_example_process, "NullNet unicast example");
 //PROCESS(start_process, "Process to print start experiment");
 //PROCESS(stop_process, "Process to print stop experiment");
 
-PROCESS(start_stop_process, "Process to print start and stop experiment");
+//PROCESS(start_stop_process, "Process to print start and stop experiment");
 
 //PROCESS(sixp_process, "6P process");
 //PROCESS(allocate_process, "Statically allocate a cell");
@@ -290,6 +294,8 @@ void print_transmission_information() {
 PROCESS_THREAD(nullnet_example_process, ev, data) {
 	static struct etimer periodic_timer;
 	static uint16_t count = 0;
+	static start_asn = ;
+	int32_t asn_diff;
 	static unsigned char addr_and_count[PAYLOAD_SIZE];
 	addr_and_count[0] = linkaddr_node_addr.u8[0];
 	addr_and_count[1] = linkaddr_node_addr.u8[1];
@@ -332,8 +338,12 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 				print_transmission_information();
 				NETSTACK_NETWORK.output_extra(&dest_addr, &linkaddr_node_addr, addr_and_count);
 				count++;
-				if (start_experiment == 0 && !linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-					// only do so if the experiment has not started yet
+
+				asn_diff = TSCH_ASN_DIFF(tsch_current_asn, start_asn);
+
+
+				if (asn_diff < STOP_DISASSOC_SLOTS && !linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+				// only do so if the experiment has not started yet
 					if (count > 45 && slotbonding_num_ack < 2) {
 						LOG_INFO("Disassociating from network because for some reason, I can't connect.\n");
 						count = 0;
@@ -342,10 +352,18 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 						tsch_disassociate();
 					}
 				}
+
+				if (start_experiment == 0 && asn_diff > START_EXP_SLOTS) {
+
+
+					start_experiment = 1;
+				}
+
 			}
-				etimer_reset(&periodic_timer);
+			etimer_reset(&periodic_timer);
 		}
 	}
+
 
 	PROCESS_END();
 }
@@ -369,29 +387,29 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 /*---------------------------------------------------------------------------*/
 
 // process to print out start of experiment
-PROCESS_THREAD(start_stop_process, ev, data) {
-	static struct etimer two_shot_timer1;
-	PROCESS_BEGIN();
-	etimer_set(&two_shot_timer1, START_EXPERIMENT_INTERVAL);
-	PROCESS_YIELD_UNTIL(etimer_expired(&two_shot_timer1));
-	LOG_INFO("***** START EXPERIMENT *****\n");
-	start_experiment = 1;
-	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-		print_transmission_information();
-	}
-		print_network_information_short();
-
-	// reset the timer
-	etimer_reset(&two_shot_timer1);
-	PROCESS_YIELD_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
-
-	print_network_information();
-	LOG_INFO("***** STOP EXPERIMENT *****\n");
-	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-		print_transmission_information();
-	}
-	PROCESS_END();
-}
+//PROCESS_THREAD(start_stop_process, ev, data) {
+//	static struct etimer two_shot_timer1;
+//	PROCESS_BEGIN();
+//	etimer_set(&two_shot_timer1, START_EXPERIMENT_INTERVAL);
+//	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1));
+//	LOG_INFO("***** START EXPERIMENT *****\n");
+//	start_experiment = 1;
+//	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+//		print_transmission_information();
+//	}
+//	print_network_information_short();
+//
+//	// reset the timer
+//	etimer_reset(&two_shot_timer1);
+//	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
+//
+//	print_network_information();
+//	LOG_INFO("***** STOP EXPERIMENT *****\n");
+//	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
+//		print_transmission_information();
+//	}
+//	PROCESS_END();
+//}
 
 //
 //// process to print out start of experiment

@@ -333,7 +333,7 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 				NETSTACK_NETWORK.output_extra(&dest_addr, &linkaddr_node_addr, addr_and_count);
 				count++;
 				if (start_experiment == 0 && !linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
-					// only do so if the experiment has not started yet
+				// only do so if the experiment has not started yet
 					if (count > 45 && slotbonding_num_ack < 2) {
 						LOG_INFO("Disassociating from network because for some reason, I can't connect.\n");
 						count = 0;
@@ -343,9 +343,10 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 					}
 				}
 			}
-				etimer_reset(&periodic_timer);
+			etimer_reset(&periodic_timer);
 		}
 	}
+
 
 	PROCESS_END();
 }
@@ -373,17 +374,17 @@ PROCESS_THREAD(start_stop_process, ev, data) {
 	static struct etimer two_shot_timer1;
 	PROCESS_BEGIN();
 	etimer_set(&two_shot_timer1, START_EXPERIMENT_INTERVAL);
-	PROCESS_YIELD_UNTIL(etimer_expired(&two_shot_timer1));
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1));
 	LOG_INFO("***** START EXPERIMENT *****\n");
 	start_experiment = 1;
 	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
 		print_transmission_information();
 	}
-		print_network_information_short();
+	print_network_information_short();
 
 	// reset the timer
 	etimer_reset(&two_shot_timer1);
-	PROCESS_YIELD_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
 
 	print_network_information();
 	LOG_INFO("***** STOP EXPERIMENT *****\n");
