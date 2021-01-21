@@ -373,7 +373,7 @@ PROCESS_THREAD(start_stop_process, ev, data) {
 	static struct etimer two_shot_timer1;
 	PROCESS_BEGIN();
 	etimer_set(&two_shot_timer1, START_EXPERIMENT_INTERVAL);
-	PROCESS_YIELD_UNTIL(etimer_expired(&two_shot_timer1));
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1));
 	LOG_INFO("***** START EXPERIMENT *****\n");
 	start_experiment = 1;
 	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
@@ -383,7 +383,7 @@ PROCESS_THREAD(start_stop_process, ev, data) {
 
 	// reset the timer
 	etimer_reset(&two_shot_timer1);
-	PROCESS_YIELD_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
+	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
 
 	print_network_information();
 	LOG_INFO("***** STOP EXPERIMENT *****\n");
