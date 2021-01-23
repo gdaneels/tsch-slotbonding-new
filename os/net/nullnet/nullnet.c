@@ -105,7 +105,7 @@ output_extra(const linkaddr_t *dest, const linkaddr_t *src_addr, const unsigned 
 {
   packetbuf_clear();
 //	uint16_t len_addr_and_count = sizeof(addr_and_count);
-  packetbuf_copyfrom(addr_and_count, 104);
+  packetbuf_copyfrom(addr_and_count, 15);
   if(dest != NULL) {
     packetbuf_set_addr(PACKETBUF_ADDR_RECEIVER, dest);
   } else {
