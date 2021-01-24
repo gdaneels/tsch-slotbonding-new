@@ -73,8 +73,8 @@
 //#define STOP_EXPERIMENT_INTERVAL (15 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 
-#define PAYLOAD_SIZE 15 // 8 bytes for the linkaddr, plus 2 byte for the count
-//#define PAYLOAD_SIZE 104 // 8 bytes for the linkaddr, plus 2 byte for the count
+//#define PAYLOAD_SIZE 15 // 8 bytes for the linkaddr, plus 2 byte for the count
+#define PAYLOAD_SIZE 104 // 8 bytes for the linkaddr, plus 2 byte for the count
 
 //static linkaddr_t orig_addr = {{0x00, 0x12, 0x4b, 0x00, 0x14, 0xd5, 0x2b, 0xab}};
 //static linkaddr_t dest_addr = {{0x00, 0x12, 0x4b, 0x00, 0x19, 0x32, 0xe4, 0xb2}};
