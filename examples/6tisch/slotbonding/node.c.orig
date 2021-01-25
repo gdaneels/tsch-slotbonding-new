@@ -59,7 +59,7 @@
 
 /* Configuration */
 //#define SEND_INTERVAL (1 * CLOCK_SECOND)
-//#define SEND_INTERVAL 128l
+//#define SEND_INTERVAL 33l
 
 
 ///// START CHANGE SENDINTERVAL /////
