@@ -191,8 +191,8 @@ update_ticks(void)
   uint32_t cur_rt_ticks_startup_hi;
 
 //  INTERRUPTS_DISABLE();
-  now = RTIMER_NOW();
   prev_rt_ticks_startup = rt_ticks_startup;
+  now = RTIMER_NOW();
 //  INTERRUPTS_ENABLE();
 
   cur_rt_ticks_startup_hi = prev_rt_ticks_startup >> 32;
