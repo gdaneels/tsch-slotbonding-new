@@ -114,7 +114,6 @@ rtimer_arch_next_trigger()
 rtimer_clock_t
 rtimer_arch_now()
 {
-  while(!(REG(SYS_CTRL_CLOCK_STA) & SYS_CTRL_CLOCK_STA_SYNC_32K));
   rtimer_clock_t rv;
 
   /* SMWDTHROSC_ST0 latches ST[1:3] and must be read first */
