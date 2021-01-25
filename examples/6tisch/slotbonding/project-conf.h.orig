@@ -85,7 +85,7 @@
 #define TSCH_CONF_FORCE_TOPOLOGY 1
 
 /* Force a star topology with only the coordinator transmitting an EB. */
-#define TSCH_CONF_STAR_TOPOLOGY 1
+#define TSCH_CONF_STAR_TOPOLOGY 0
 /* IEEE802.15.4 PANID */
 
 ///// START CHANGE PANID /////
@@ -128,8 +128,8 @@
 #define LOG_CONF_LEVEL_TCPIP                       LOG_LEVEL_NONE
 #define LOG_CONF_LEVEL_IPV6                        LOG_LEVEL_NONE
 #define LOG_CONF_LEVEL_6LOWPAN                     LOG_LEVEL_NONE
-#define LOG_CONF_LEVEL_MAC                         LOG_LEVEL_NONE
+#define LOG_CONF_LEVEL_MAC                         LOG_LEVEL_INFO
 #define LOG_CONF_LEVEL_FRAMER                      LOG_LEVEL_NONE
-#define TSCH_LOG_CONF_PER_SLOT                     0
+#define TSCH_LOG_CONF_PER_SLOT                     1
 
 #endif /* PROJECT_CONF_H_ */
