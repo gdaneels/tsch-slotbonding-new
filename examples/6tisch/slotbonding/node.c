@@ -216,14 +216,16 @@ void print_network_information_short() {
 
 void print_transmission_information() {
 	if (slotbonding_num_ack > 10) {
-		LOG_INFO_(" (ETX = %" PRIu16 ", NUM_TX = %" PRIu16 ", NUM_ACK = %" PRIu16 ")\n", (uint16_t)(slotbonding_num_tx / slotbonding_num_ack),
-				slotbonding_num_tx, slotbonding_num_ack);
+		LOG_INFO_(" (ETX = %" PRIu16 ", NUM_TX = %" PRIu16 ", NUM_ACK = %" PRIu16 ", N_ALL = %" PRIu16 ")\n", (uint16_t)(slotbonding_num_tx / slotbonding_num_ack),
+				slotbonding_num_tx, slotbonding_num_ack, slotbonding_num_tx_all);
 	} else {
 		LOG_INFO_(" (ETX = UNDEFINED, NUM_TX = %"
 		PRIu16
 		", NUM_ACK = %"
 		PRIu16
-		")\n", slotbonding_num_tx, slotbonding_num_ack);
+		", N_ALL = %"
+		PRIu16
+		")\n", slotbonding_num_tx, slotbonding_num_ack, slotbonding_num_tx_all);
 	}
 //	if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
 ////		if (slotbonding_num_tx > 50 && slotbonding_num_ack < 2) {
