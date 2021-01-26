@@ -178,6 +178,7 @@ static void *new_tsch_timing = &tsch_timing_us;
 
 #if TSCH_SLOTBONDING
 //uint8_t slotbonding_stats_count = 0;
+uint16_t slotbonding_num_tx_all = 0;
 uint16_t slotbonding_num_tx = 0;
 uint16_t slotbonding_num_ack = 0;
 //uint16_t slotbonding_etx_emwa = 0;
@@ -651,7 +652,18 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
           /* turn tadio off -- will turn on again to wait for ACK if needed */
           tsch_radio_off(TSCH_RADIO_CMD_OFF_WITHIN_TIMESLOT);
 
+
+
           if(mac_tx_status == RADIO_TX_OK) {
+			  TSCH_LOG_ADD(tsch_log_message,
+						   snprintf(log->message, sizeof(log->message),
+									"! RADIO TX OK"));
+
+#if TSCH_SLOTBONDING
+			  if (current_neighbor != NULL && current_neighbor->is_time_source && ((((uint8_t *)(queuebuf_dataptr(current_packet->qb)))[0]) & 7) == FRAME802154_DATAFRAME) {
+						slotbonding_num_tx += 1;
+			  }
+#endif
             if(do_wait_for_ack) {
               uint8_t ackbuf[TSCH_PACKET_MAX_LEN];
               int ack_len;
@@ -747,6 +759,14 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
                 }
                 mac_tx_status = MAC_TX_OK;
 
+#if TSCH_SLOTBONDING
+			  	if (current_neighbor != NULL && current_neighbor->is_time_source && ((((uint8_t *)(queuebuf_dataptr(current_packet->qb)))[0]) & 7) == FRAME802154_DATAFRAME) {
+						if (mac_tx_status == MAC_TX_OK) {
+							slotbonding_num_ack += 1;
+						}
+				}
+#endif
+
                 /* We requested an extra slot and got an ack. This means
                 the extra slot will be scheduled at the received */
                 if(burst_link_requested) {
@@ -754,12 +774,15 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
                 }
               } else {
                 mac_tx_status = MAC_TX_NOACK;
-                TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"Ack length: 0"););
+                TSCH_LOG_ADD(tsch_log_message, snprintf(log->message, sizeof(log->message),"Ack length: 0"));
               }
             } else {
               mac_tx_status = MAC_TX_OK;
             }
           } else {
+              TSCH_LOG_ADD(tsch_log_message,
+                           snprintf(log->message, sizeof(log->message),
+                                    "! MAC_TX_ERR"));
             mac_tx_status = MAC_TX_ERR;
           }
         }
@@ -787,14 +810,10 @@ PT_THREAD(tsch_tx_slot(struct pt *pt, struct rtimer *t))
       tsch_stats_tx_packet(current_neighbor, mac_tx_status, tsch_current_channel);
     }
 
-
 #if TSCH_SLOTBONDING
 	  if (current_neighbor != NULL && current_neighbor->is_time_source && ((((uint8_t *)(queuebuf_dataptr(current_packet->qb)))[0]) & 7) == FRAME802154_DATAFRAME) {
-			slotbonding_num_tx += 1;
-			if (mac_tx_status == MAC_TX_OK) {
-				slotbonding_num_ack += 1;
-			}
-}
+						slotbonding_num_tx_all += 1;
+				}
 #endif
 
     /* Log every tx attempt */
@@ -880,6 +899,9 @@ PT_THREAD(tsch_rx_slot(struct pt *pt, struct rtimer *t))
           current_slot_start, tsch_timing[tsch_ts_rx_offset] + tsch_timing[tsch_ts_rx_wait] + RADIO_DELAY_BEFORE_DETECT);
     }
     if(!packet_seen) {
+		TSCH_LOG_ADD(tsch_log_message,
+					 snprintf(log->message, sizeof(log->message),
+							  "! No packet seen"));
       /* no packets on air */
       tsch_radio_off(TSCH_RADIO_CMD_OFF_FORCE);
     } else {

@@ -112,7 +112,7 @@ output_extra(const linkaddr_t *dest, const linkaddr_t *src_addr, const unsigned 
     packetbuf_set_addr(PACKETBUF_ADDR_RECEIVER, &linkaddr_null);
   }
   packetbuf_set_addr(PACKETBUF_ADDR_SENDER, &linkaddr_node_addr);
-  LOG_INFO("sending %u bytes to ", packetbuf_datalen());
+  LOG_INFO("sending (output_extra) %u bytes to ", packetbuf_datalen());
   LOG_INFO_LLADDR(packetbuf_addr(PACKETBUF_ADDR_RECEIVER));
   LOG_INFO_("\n");
   NETSTACK_MAC.send(NULL, NULL);

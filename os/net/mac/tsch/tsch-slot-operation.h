@@ -63,6 +63,7 @@ extern int tsch_current_burst_count;
 
 #if TSCH_SLOTBONDING
 uint16_t slotbonding_num_tx;
+uint16_t slotbonding_num_tx_all;
 uint16_t slotbonding_num_ack;
 #endif
 
