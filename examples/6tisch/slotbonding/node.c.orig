@@ -67,7 +67,7 @@
 
 //#define STATS_INTERVAL (60 * CLOCK_SECOND)
 #define START_EXPERIMENT_INTERVAL (5 * 60 * CLOCK_SECOND) // start after 5 minutes
-#define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+#define STOP_EXPERIMENT_INTERVAL (20 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 //#define START_EXPERIMENT_INTERVAL (10 * 60 * CLOCK_SECOND) // start after 5 minutes
 //#define STOP_EXPERIMENT_INTERVAL (15 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
@@ -384,7 +384,8 @@ PROCESS_THREAD(start_stop_process, ev, data) {
 		print_network_information_short();
 
 	// reset the timer
-	etimer_reset(&two_shot_timer1);
+//	etimer_reset(&two_shot_timer1);
+	etimer_set(&two_shot_timer1, STOP_EXPERIMENT_INTERVAL);
 	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
 
 	print_network_information();
