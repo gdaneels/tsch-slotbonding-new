@@ -197,9 +197,9 @@ update_ticks(void)
 
   cur_rt_ticks_startup_hi = prev_rt_ticks_startup >> 32;
   if(now < (rtimer_clock_t)prev_rt_ticks_startup) {
-//    if((rtimer_clock_t)prev_rt_ticks_startup - now > 2) {
+    if((rtimer_clock_t)prev_rt_ticks_startup - now > 2) {
       cur_rt_ticks_startup_hi++;
-//    }
+    }
   }
   cur_rt_ticks_startup = (uint64_t)cur_rt_ticks_startup_hi << 32 | now;
   rt_ticks_startup = cur_rt_ticks_startup;
