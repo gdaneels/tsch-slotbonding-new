@@ -64,7 +64,7 @@
 /*******************************************************/
 
 #define QUEUEBUF_CONF_NUM 8
-#define TSCH_CONF_MAX_INCOMING_PACKETS 32
+#define TSCH_CONF_MAX_INCOMING_PACKETS 8
 
 #define TSCH_CONF_EB_PERIOD (7 * CLOCK_SECOND)
 
