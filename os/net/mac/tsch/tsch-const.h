@@ -76,7 +76,8 @@
 // 2 channels for 1000 kbps PHY
 #define TSCH_HOPPING_SEQUENCE_2_2_sb (uint8_t[]){ 0, 1 }
 // 3 channels, sequence length 4
-#define TSCH_HOPPING_SEQUENCE_3_8_sb (uint8_t[]) { 1, 0, 1, 0, 1, 0, 2, 2 }
+//#define TSCH_HOPPING_SEQUENCE_3_8_sb (uint8_t[]) { 1, 0, 1, 0, 1, 0, 2, 2 }
+#define TSCH_HOPPING_SEQUENCE_3_8_sb (uint8_t[]) { 0, 2, 1 }
 #endif
 
 /* Max TSCH packet length equal to the length of the packet buffer */
