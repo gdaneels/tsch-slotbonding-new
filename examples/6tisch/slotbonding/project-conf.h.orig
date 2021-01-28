@@ -99,7 +99,7 @@
 
 /* 6TiSCH minimal schedule length.
  * Larger values result in less frequent active slots: reduces capacity and saves energy. */
-//#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 47
+//#define TSCH_SCHEDULE_CONF_DEFAULT_LENGTH 29
 
 
 ///// START CHANGE SLOTFRAMELENGTH /////
@@ -112,9 +112,10 @@
 #define TSCH_CONF_BURST_MAX_LEN 0
 
 #define TSCH_CONF_JOIN_HOPPING_SEQUENCE TSCH_HOPPING_SEQUENCE_1_1_sb
-/* Define channel hopping sequence */
-#define TSCH_CONF_DEFAULT_HOPPING_SEQUENCE TSCH_HOPPING_SEQUENCE_3_8_sb
-
+/* Define channel hopping sequence, this one is used for 50 kbps */
+#define TSCH_CONF_DEFAULT_HOPPING_SEQUENCE TSCH_HOPPING_SEQUENCE_3_3_sb
+/* Define channel hopping sequence, this one is used for 1000 kbps */
+#define TSCH_CONF_DEFAULT_HOPPING_SEQUENCE_1000KBPS TSCH_HOPPING_SEQUENCE_2_2_sb
 
 ///// START CHANGE MAX_FRAME_RETRIES /////
 

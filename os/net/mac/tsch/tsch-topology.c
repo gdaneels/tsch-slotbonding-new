@@ -15,12 +15,12 @@
 ///// START CHANGE NUMTX /////
 
 
-//#define TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS 2
+//#define TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS 0
 
 ///// START CHANGE NUMRX /////
 
 
-//#define TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS 1
+//#define TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS 3
 
 
 ///// START CHANGE PARENT /////
@@ -41,6 +41,8 @@ typedef struct {
 
 ///// START CHANGE TX /////
 
+
+
 //static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
 //		{9, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_1000_KBPS_PHY}, {30, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_50_KBPS_PHY}
 //};
@@ -48,7 +50,7 @@ typedef struct {
 
 
 //static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
-//		{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY}, {15, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY}, {20, 1, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_50_KBPS_PHY}
+//		{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_1000_KBPS_PHY}, {15, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_1000_KBPS_PHY}, {20, 1, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe3, 0x20}}, TSCH_SLOTBONDING_1000_KBPS_PHY}
 //};
 
 //static const force_topology_allocation tx_allocations[TSCH_TOPOLOGY_MAX_TX_ALLOCATIONS] = {
@@ -111,7 +113,7 @@ typedef struct {
 //};
 
 //static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {
-//	{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_50_KBPS_PHY}, {15, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_50_KBPS_PHY}, {20, 1, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_50_KBPS_PHY}
+//	{10, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_1000_KBPS_PHY}, {15, 0, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_1000_KBPS_PHY}, {20, 1, {{0x00, 0x12, 0x4b, 0x00,  0x19, 0x32, 0xe4, 0xb2}}, TSCH_SLOTBONDING_1000_KBPS_PHY}
 //};
 //
 //static const force_topology_allocation rx_allocations[TSCH_TOPOLOGY_MAX_RX_ALLOCATIONS] = {};
