@@ -67,7 +67,7 @@
 
 //#define STATS_INTERVAL (60 * CLOCK_SECOND)
 #define START_EXPERIMENT_INTERVAL (5 * 60 * CLOCK_SECOND) // start after 5 minutes
-#define STOP_EXPERIMENT_INTERVAL (20 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
+#define STOP_EXPERIMENT_INTERVAL (9 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
 
 //#define START_EXPERIMENT_INTERVAL (10 * 60 * CLOCK_SECOND) // start after 5 minutes
 //#define STOP_EXPERIMENT_INTERVAL (15 * 60 * CLOCK_SECOND) // stop after 15 minutes so you havea  10 minutes experiment
@@ -139,13 +139,13 @@ void input_callback(const void *data, uint16_t len,
 		received_asn.ls4b |= (uint32_t)addr_and_count[12] << 16;
 		received_asn.ls4b |= (uint32_t)addr_and_count[13] << 24;
 		received_asn.ms1b = (uint8_t)addr_and_count[14];
-		int32_t diff = TSCH_ASN_DIFF(tsch_current_asn, received_asn);
-		if (linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) { // only print this if you are the coordinator
-			LOG_INFO(">>> RX %u (asn %02x.%08lx - d %" PRIu32 ") from ", count, received_asn.ms1b, received_asn.ls4b, diff);
-			linkaddr_t orig_src_addr =  {{ addr_and_count[0], addr_and_count[1], addr_and_count[2], addr_and_count[3], addr_and_count[4], addr_and_count[5], addr_and_count[6], addr_and_count[7] }};
-			LOG_INFO_LLADDR(&orig_src_addr);
-			LOG_INFO_("\n");
-		}
+//		int32_t diff = TSCH_ASN_DIFF(tsch_current_asn, received_asn);
+//		if (linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) { // only print this if you are the coordinator
+//			LOG_INFO(">>> RX %u (asn %02x.%08lx - d %" PRIu32 ") from ", count, received_asn.ms1b, received_asn.ls4b, diff);
+//			linkaddr_t orig_src_addr =  {{ addr_and_count[0], addr_and_count[1], addr_and_count[2], addr_and_count[3], addr_and_count[4], addr_and_count[5], addr_and_count[6], addr_and_count[7] }};
+//			LOG_INFO_LLADDR(&orig_src_addr);
+//			LOG_INFO_("\n");
+//		}
 		if (!linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) { // if this is not the coordinator, forward to parent
 //			LOG_INFO(">>> FW %u to ", count);
 //			LOG_INFO_LLADDR(&dest_addr);
@@ -329,9 +329,9 @@ PROCESS_THREAD(nullnet_example_process, ev, data) {
 				addr_and_count[12] = tsch_current_asn.ls4b >> 16; // asn.ls4b >> 16
 				addr_and_count[13] = tsch_current_asn.ls4b >> 24; // asn.ls4b >> 24
 				addr_and_count[14] = tsch_current_asn.ms1b; // asn.ms1b
-				LOG_INFO(">>> TX %u (asn %02x.%08lx) to ", count, tsch_current_asn.ms1b, tsch_current_asn.ls4b);
-				LOG_INFO_LLADDR(&dest_addr);
-				print_transmission_information();
+//				LOG_INFO(">>> TX %u (asn %02x.%08lx) to ", count, tsch_current_asn.ms1b, tsch_current_asn.ls4b);
+//				LOG_INFO_LLADDR(&dest_addr);
+//				print_transmission_information();
 				NETSTACK_NETWORK.output_extra(&dest_addr, &linkaddr_node_addr, addr_and_count);
 				count++;
 				if (start_experiment == 0 && !linkaddr_cmp(&coordinator_addr, &linkaddr_node_addr)) {
