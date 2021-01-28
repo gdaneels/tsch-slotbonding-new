@@ -386,8 +386,8 @@ PROCESS_THREAD(start_stop_process, ev, data) {
 	//LOG_INFO_LLADDR(&dest_addr);
 	//print_transmission_information();
 	// reset the timer
-//	etimer_reset(&two_shot_timer1);
-	etimer_set(&two_shot_timer1, STOP_EXPERIMENT_INTERVAL);
+	etimer_reset(&two_shot_timer1);
+//	etimer_set(&two_shot_timer1, STOP_EXPERIMENT_INTERVAL);
 	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&two_shot_timer1)); // wait again for it to expire
 
 	print_network_information();
