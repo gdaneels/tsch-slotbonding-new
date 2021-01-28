@@ -167,6 +167,12 @@ extern uint8_t tsch_current_channel_offset;
 /* TSCH channel hopping sequence */
 extern uint8_t tsch_hopping_sequence[TSCH_HOPPING_SEQUENCE_MAX_LEN];
 extern struct tsch_asn_divisor_t tsch_hopping_sequence_length;
+
+// Hard coding the length of the 1000 kbps
+extern uint8_t tsch_hopping_sequence_1000kbps[2];
+extern struct tsch_asn_divisor_t tsch_hopping_sequence_length_1000kbps;
+
+
 /* TSCH timeslot timing (in micro-second) */
 extern tsch_timeslot_timing_usec tsch_timing_us;
 /* TSCH timeslot timing (in rtimer ticks) */

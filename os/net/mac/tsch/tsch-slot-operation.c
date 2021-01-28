@@ -278,12 +278,34 @@ tsch_get_channel_offset(struct tsch_link *link, struct tsch_packet *p)
  * \return The resulting channel
  */
 static uint8_t
-tsch_calculate_channel(struct tsch_asn_t *asn, uint16_t channel_offset)
+tsch_calculate_channel(struct tsch_asn_t *asn, uint16_t channel_offset
+#if TSCH_SLOTBONDING
+        , int phy
+#endif // TSCH_SLOTBONDING
+)
 {
-  uint16_t index_of_0, index_of_offset;
-  index_of_0 = TSCH_ASN_MOD(*asn, tsch_hopping_sequence_length);
-  index_of_offset = (index_of_0 + channel_offset) % tsch_hopping_sequence_length.val;
-  return tsch_hopping_sequence[index_of_offset];
+    uint16_t index_of_0, index_of_offset;
+#if TSCH_SLOTBONDING
+    if (phy == TSCH_SLOTBONDING_50_KBPS_PHY) {
+#endif // TSCH_SLOTBONDING
+//		printf("!PRINT OUT 50 KBPS PHY\n");
+        index_of_0 = TSCH_ASN_MOD(*asn, tsch_hopping_sequence_length);
+        index_of_offset = (index_of_0 + channel_offset) % tsch_hopping_sequence_length.val;
+//		printf("%d\n", tsch_hopping_sequence[index_of_offset]);
+        return tsch_hopping_sequence[index_of_offset];
+#if TSCH_SLOTBONDING
+    } else if (phy == TSCH_SLOTBONDING_1000_KBPS_PHY) {
+//	    printf("!PRINT OUT 1000 KBPS PHY\n");
+        index_of_0 = TSCH_ASN_MOD(*asn, tsch_hopping_sequence_length_1000kbps);
+        index_of_offset = (index_of_0 + channel_offset) % tsch_hopping_sequence_length_1000kbps.val;
+//        printf("%d\n", tsch_hopping_sequence_1000kbps[index_of_offset]);
+        return tsch_hopping_sequence_1000kbps[index_of_offset];
+    } else {
+        index_of_0 = TSCH_ASN_MOD(*asn, tsch_hopping_sequence_length);
+        index_of_offset = (index_of_0 + channel_offset) % tsch_hopping_sequence_length.val;
+        return tsch_hopping_sequence[index_of_offset];
+    }
+#endif // TSCH_SLOTBONDING
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1179,7 +1201,11 @@ PT_THREAD(tsch_slot_operation(struct rtimer *t, void *ptr))
         } else {
           /* Hop channel */
           tsch_current_channel_offset = tsch_get_channel_offset(current_link, current_packet);
-          tsch_current_channel = tsch_calculate_channel(&tsch_current_asn, tsch_current_channel_offset);
+          tsch_current_channel = tsch_calculate_channel(&tsch_current_asn, tsch_current_channel_offset
+#if TSCH_SLOTBONDING
+                  , current_link->current_phy
+#endif // TSCH_SLOTBONDING
+			);
         }
         NETSTACK_RADIO.set_value(RADIO_PARAM_CHANNEL, tsch_current_channel);
         /* Turn the radio on already here if configured so; necessary for radios with slow startup */
