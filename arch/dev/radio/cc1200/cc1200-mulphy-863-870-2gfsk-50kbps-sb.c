@@ -19,7 +19,7 @@
 /* The minimum channel */
 #define RF_CFG_MIN_CHANNEL              0
 /* The maximum channel */
-#define RF_CFG_MAX_CHANNEL              15
+#define RF_CFG_MAX_CHANNEL              2
 //#define RF_CFG_MAX_CHANNEL              33
 /* The maximum output power in dBm */
 #define RF_CFG_MAX_TXPOWER              CC1200_CONST_TX_POWER_MAX
