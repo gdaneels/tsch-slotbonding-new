@@ -9,13 +9,13 @@
 <sliver_type name="raw-pc"/>
 <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1665" y="400"/>
 </node>
-<node client_id="nuc9-11" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-11">
-<sliver_type name="raw-pc"/>
-<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="705" y="950"/>
-</node>
 <node client_id="nuc9-14" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-14">
 <sliver_type name="raw-pc"/>
 <location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="465" y="185"/>
+</node>
+<node client_id="nuc9-18" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-18">
+<sliver_type name="raw-pc"/>
+<location xmlns="http://jfed.iminds.be/rspec/ext/jfed/1" x="1440" y="185"/>
 </node>
 <node client_id="nuc9-22" exclusive="true" component_manager_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+authority+cm" component_id="urn:publicid:IDN+wilab1.ilabt.iminds.be+node+nuc9-22">
 <sliver_type name="raw-pc"/>
